@@ -1,0 +1,44 @@
+HELP.md
+
+# STS
+.apt_generated
+.factorypath
+.springBeans
+.sts4-cache
+
+# IntelliJ IDEA
+.idea
+*.iws
+*.iml
+*.ipr
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+
+# Compiled class file
+*.class
+
+# Log files
+*.log
+
+# Maven directory
+target/
+
+# Generated documentation
+/docs/
+
+# Lombok generated files
+/target/generated-sources/delombok/
+
+# Spring Boot devtools
+.restart/
+
+# OS-specific files
+.DS_Store
