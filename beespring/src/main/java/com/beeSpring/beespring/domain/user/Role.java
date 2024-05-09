@@ -1,4 +1,5 @@
 package com.beeSpring.beespring.domain.user;
 
-public class Role {
+public enum Role {
+    ADMIN, USER
 }
