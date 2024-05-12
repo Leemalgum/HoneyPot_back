@@ -1,15 +1,17 @@
 package com.beeSpring.beespring.domain.bid;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Product")
+@Table(name = "Product", catalog = "honeypot2")
 @Getter
 @NoArgsConstructor
 public class Product {
@@ -26,7 +28,7 @@ public class Product {
     private String image5;
     private String productInfo;
     private int price;
-    private int priceUnit;
+    private Integer priceUnit;
     private int buyNow;
     private LocalDateTime timeLimit;
     private long view;
