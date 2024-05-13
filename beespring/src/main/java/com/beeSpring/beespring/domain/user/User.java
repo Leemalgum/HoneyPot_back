@@ -1,16 +1,25 @@
 package com.beeSpring.beespring.domain.user;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Blob;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-@Entity
+/**
+ * 로그인 기능
+ * @AllArgsConstructor 를 쓰고 다른 데서 시간을 입력할지 직접 생성자를 만들고 localDate.now() 를 쓸지 생각해보자 
+ * */
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Table(name="User")
+@Entity
 public class User {
     @Id
-    @Column(name = "serial_number")
+    @Column(name = "serial_number", nullable = false)
     private String serialNumber;
     @Column(name = "user_id")
     private String userId;
@@ -43,116 +52,6 @@ public class User {
     private String tag1;
     private String tag2;
     private String tag3;
-
-    protected User() {
-    }
-    public User(String serialNumber, String userId, int roleId, String password, String firstName, String lastName, String nickname, String email, String mobileNumber, LocalDateTime registrationDate, LocalDate birthdate, int reportedCnt, State state, String reason, int suspended, LocalDateTime modDate, String refreshToken, Blob profileImage, String tag1, String tag2, String tag3) {
-        this.serialNumber = serialNumber;
-        this.userId = userId;
-        this.roleId = roleId;
-        this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.nickname = nickname;
-        this.email = email;
-        this.mobileNumber = mobileNumber;
-        this.registrationDate = registrationDate;
-        this.birthdate = birthdate;
-        this.reportedCnt = reportedCnt;
-        this.state = state;
-        this.reason = reason;
-        this.suspended = suspended;
-        this.modDate = modDate;
-        this.refreshToken = refreshToken;
-        this.profileImage = profileImage;
-        this.tag1 = tag1;
-        this.tag2 = tag2;
-        this.tag3 = tag3;
-    }
-
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public int getRoleId() {
-        return roleId;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getMobileNumber() {
-        return mobileNumber;
-    }
-
-    public LocalDateTime getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public LocalDate getBirthdate() {
-        return birthdate;
-    }
-
-    public int getReportedCnt() {
-        return reportedCnt;
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public int getSuspended() {
-        return suspended;
-    }
-
-    public LocalDateTime getModDate() {
-        return modDate;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public Blob getProfileImage() {
-        return profileImage;
-    }
-
-    public String getTag1() {
-        return tag1;
-    }
-
-    public String getTag2() {
-        return tag2;
-    }
-
-    public String getTag3() {
-        return tag3;
-    }
 
     @Override
     public String toString() {
