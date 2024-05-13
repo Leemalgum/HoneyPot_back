@@ -1,22 +1,14 @@
 package com.beeSpring.beespring.service.bid;
 
-import com.beeSpring.beespring.domain.bid.Product;
-import com.beeSpring.beespring.repository.bid.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.beeSpring.beespring.dto.bid.ProductDTO;
+import com.beeSpring.beespring.dto.bid.ProductWithIdolNameDTO;
 
 import java.util.List;
 
-@Service
-public class BidService {
-    private final ProductRepository productRepository;
 
-    @Autowired
-    public BidService(ProductRepository productRepository){
-        this.productRepository = productRepository;
-    }
+public interface BidService {
 
-    public List<Product> getAllProducts(){
-        return productRepository.findAll();
-    }
+    public List<ProductWithIdolNameDTO> getAllProductsWithIdolName();
+
+    public ProductDTO getProductById(String productId);
 }
