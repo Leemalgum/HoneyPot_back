@@ -1,12 +1,13 @@
 package com.beeSpring.beespring.dto.bid;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
+@Setter
+@Builder
+@AllArgsConstructor
 public class ProductDTO {
     private String productId;
     private int idolId;
@@ -20,7 +21,7 @@ public class ProductDTO {
     private String image5;
     private String productInfo;
     private int price;
-    private int priceUnit;
+    private Integer priceUnit;
     private int buyNow;
     private LocalDateTime timeLimit;
     private long view;
@@ -30,5 +31,6 @@ public class ProductDTO {
     private String requestId;
     private LocalDateTime requestTime;
     private String storageStatus;
+    public ProductDTO(){}
 }
 
