@@ -1,16 +1,17 @@
 package com.beeSpring.beespring.dto.bid;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
-public class ProductDTO {
+@NoArgsConstructor
+public class ProductWithIdolNameDTO {
     private String productId;
-    private int idolId;
+    private String idolName;
     private int ptypeId;
     private String serialNumber;
     private String productName;
@@ -31,6 +32,4 @@ public class ProductDTO {
     private String requestId;
     private LocalDateTime requestTime;
     private String storageStatus;
-    public ProductDTO(){}
 }
-
