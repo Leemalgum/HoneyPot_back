@@ -7,8 +7,6 @@
              version="3.0">
 
     <persistence-unit name="beespring" transaction-type="RESOURCE_LOCAL">
-        <class>com.beeSpring.beespring.domain.</class>
-        <class>com.beeSpring.beespring.domain.</class>
 
         <class>com.beeSpring.beespring.domain.bid.BidLog</class>
         <class>com.beeSpring.beespring.domain.bid.BidResult</class>
@@ -43,9 +41,9 @@
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
             <property name="jakarta.persistence.jdbc.url"
-                      value="jdbc:mysql://localhost/jpabegin?characterEncoding=utf8"/>
-            <property name="jakarta.persistence.jdbc.user" value="jpauser"/>
-            <property name="jakarta.persistence.jdbc.password" value="jpapass"/>
+                      value="jdbc:mysql://localhost/honeypot2"/>
+            <property name="jakarta.persistence.jdbc.user" value="root"/>
+            <property name="jakarta.persistence.jdbc.password" value="akdlrnal!99"/>
 
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
             <property name="hibernate.hikari.poolName" value="pool"/>
