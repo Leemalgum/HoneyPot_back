@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Product")
-@Table(name = "Product", catalog = "honeypot2")
 @Getter
 @NoArgsConstructor
 public class Product {
