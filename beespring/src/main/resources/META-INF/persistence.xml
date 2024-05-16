@@ -34,8 +34,8 @@
         <class>com.beeSpring.beespring.domain.user.User</class>
         <class>com.beeSpring.beespring.domain.user.UserIdol</class>
 
-        <class>com.beeSpring.beespring.domain.utils.Policy</class>
-        <class>com.beeSpring.beespring.domain.utils.Subscription</class>
+        <class>com.beeSpring.beespring.domain.policy.Policy</class>
+        <class>com.beeSpring.beespring.domain.subscription.Subscription</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
