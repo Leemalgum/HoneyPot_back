@@ -63,8 +63,8 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeRequests(auth -> auth
                         .requestMatchers("/", "/auth/**", "/login", "/signup").permitAll()
-                        .requestMatchers("/api/v1/user/**").hasAnyRole("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/api/v1/admin/**").hasRole("ROLE_ADMIN")
+                        .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2

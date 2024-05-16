@@ -12,6 +12,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     /**
      * sql injection 을 예방하기 위해 userId를 parameter 로 binding 함
      * */
-    @Query("SELECT u FROM User u WHERE u.user_id = :userId")
+    @Query("SELECT u FROM User u WHERE u.userId = :userId")
     User findByUserId(@Param("userId") String userId);
 }

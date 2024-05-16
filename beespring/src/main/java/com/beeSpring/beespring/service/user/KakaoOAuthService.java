@@ -1,9 +1,9 @@
 package com.beeSpring.beespring.service.user;
 
-import com.beeSpring.beespring.service.utils.JwtUtil;
+import com.beeSpring.beespring.security.jwt.JwtTokenProvider;
 import com.beeSpring.beespring.domain.user.OAuthUser;
 import com.beeSpring.beespring.repository.user.OAuthUserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,12 +14,10 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class KakaoOAuthService {
-    @Autowired
-    private OAuthUserRepository oAuthUserRepository;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final OAuthUserRepository oAuthUserRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public String handleKakaoLogin(String accessToken) {
         // Get user info from Kakao
@@ -59,7 +57,7 @@ public class KakaoOAuthService {
         oAuthUser.setProfileImage(profileImage);
         oAuthUserRepository.save(oAuthUser);
 
-        return jwtUtil.generateToken(oAuthUser.getUsername());
+        return jwtTokenProvider.createToken(oAuthUser.getUsername());
     }
 }
 
