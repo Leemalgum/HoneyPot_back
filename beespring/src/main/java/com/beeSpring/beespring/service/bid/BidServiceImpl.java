@@ -42,7 +42,6 @@ public class BidServiceImpl implements BidService{
             productDTO.setStartPrice(product.getStartPrice());
             productDTO.setRegistrationDate(product.getRegistrationDate());
             productDTO.setBidCnt(product.getBidCnt());
-            productDTO.setRequestId(product.getRequestId());
             productDTO.setRequestTime(product.getRequestTime());
             productDTO.setStorageStatus(product.getStorageStatus());
 
@@ -75,10 +74,10 @@ public class BidServiceImpl implements BidService{
                 .startPrice(product.getStartPrice())
                 .registrationDate(product.getRegistrationDate())
                 .bidCnt(product.getBidCnt())
-                .requestId(product.getRequestId())
                 .requestTime(product.getRequestTime())
                 .storageStatus(product.getStorageStatus())
                 .build();
         return productDTO;
     }
+
 }
