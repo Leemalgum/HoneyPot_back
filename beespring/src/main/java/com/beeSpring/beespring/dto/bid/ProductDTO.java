@@ -28,7 +28,6 @@ public class ProductDTO {
     private int startPrice;
     private LocalDateTime registrationDate;
     private int bidCnt;
-    private String requestId;
     private LocalDateTime requestTime;
     private String storageStatus;
     public ProductDTO(){}
