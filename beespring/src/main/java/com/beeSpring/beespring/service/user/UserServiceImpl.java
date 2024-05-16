@@ -1,25 +1,52 @@
 package com.beeSpring.beespring.service.user;
 
 import com.beeSpring.beespring.domain.user.User;
-import com.beeSpring.beespring.dto.user.UserDTO;
-import com.beeSpring.beespring.exception.UserIdNotFoundException;
+import com.beeSpring.beespring.dto.user.UserTokens;
 import com.beeSpring.beespring.repository.user.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.beeSpring.beespring.repository.user.UserTokensRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final UserTokensRepository userTokensRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public UserDetails loadUserByUserId(String userId) throws UserIdNotFoundException {
-        System.out.println(userId);
-        User user = userRepository.findByUserId(userId);
-        if(user==null) {
-            throw new UserIdNotFoundException("해당 유저가 존재하지 않습니다.");
-        }
-        return new PrincipalDetail(user);
+    public void registerUser(User user) {
+        // 비밀번호 암호화 및 사용자 저장
+        userRepository.save(user);
+    }
+
+    @Override
+    public User findUserByUserId(String userId) {
+        return userRepository.findByUserId(userId);
+    }
+
+    @Override
+    public void saveUserTokens(UserTokens userTokens) {
+        userTokensRepository.save(userTokens);
+    }
+
+    @Override
+    public UserTokens findUserTokensById(String userTokensId) {
+        return userTokensRepository.findById(userTokensId).orElse(null);
+    }
+
+    @Override
+    public void updateUser(User user) {
+        User existingUser = userRepository.findById(user.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+        existingUser.setUserId(user.getUserId());
+        existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(existingUser);
+    }
+
+    @Override
+    public void deleteUser(String userId) {
+        userRepository.deleteById(userId);
     }
 }
+
