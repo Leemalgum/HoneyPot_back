@@ -3,24 +3,22 @@ package com.beeSpring.beespring.controller.user;
 import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.repository.user.UserRepository;
 import com.beeSpring.beespring.service.jwt.TokenService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
 
-@Slf4j
-@RestController
-@RequiredArgsConstructor
-public class UserController {
+@Controller
+@RequestMapping("/oauth2")
+public class OAuth2Controller {
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private TokenService tokenService;
 
@@ -44,7 +42,7 @@ public class UserController {
         LocalDateTime accessTokenExpiration = LocalDateTime.now().plusMinutes(10); // 예시로 10분 설정
         LocalDateTime refreshTokenExpiration = LocalDateTime.now().plusDays(30); // 예시로 30일 설정
 
-        tokenService.saveToken(user.getSerialNumber(), accessToken, refreshToken, accessTokenExpiration, refreshTokenExpiration);
+        tokenService.saveToken(user.getUserId(), accessToken, refreshToken, accessTokenExpiration, refreshTokenExpiration);
 
         return "redirect:/";
     }
@@ -68,21 +66,4 @@ public class UserController {
 
         return "redirect:/login?logout";
     }
-
-    @PostMapping("/signupSuccess")
-    public String signupSuccess(@RequestBody User newUser) {
-        if (userRepository.existsByUserId(newUser.getUserId())) {
-            return "redirect:/signup?error=userexists";
-        }
-        newUser.setRegistrationDate(LocalDateTime.now());
-        userRepository.save(newUser);
-        return "redirect:/signup?success";
-    }
-
-    @GetMapping("/signupFailure")
-    public String signupFailure() {
-        // 회원가입 실패 시 처리 로직 추가
-        return "redirect:/signup?error";
-    }
 }
-
