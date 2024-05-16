@@ -14,6 +14,9 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 public class MypageController {
     private final MypageService mypageService;
 

@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "Idol")
+import org.springframework.data.annotation.TypeAlias;
+
+@Entity
+@Table(name = "Idol", catalog = "honeypot2")
 @Getter
 @NoArgsConstructor
 public class Idol {
@@ -17,5 +21,6 @@ public class Idol {
     private int idolId;
 
     @Column(name = "idol_name")
+    private int idolId;
     private String idolName;
 }

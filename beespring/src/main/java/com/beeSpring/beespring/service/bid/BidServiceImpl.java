@@ -80,5 +80,4 @@ public class BidServiceImpl implements BidService{
         return productDTO;
     }
 
-
 }
