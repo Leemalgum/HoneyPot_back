@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Blob;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 /**
@@ -25,6 +24,8 @@ public class User {
     private String userId;
     @Column(name="role_id")
     private int roleId;
+    @Column(name="role")
+    private String role; // enum 이 아니라 string 으로 하는게 맞는지?
     private String password;
     @Column(name="first_name")
     private String firstName;
@@ -48,7 +49,7 @@ public class User {
     @Column(name="refresh_token")
     private String refreshToken;
     @Column(name="profile_image")
-    private Blob profileImage;
+    private String profileImage;
     private String tag1;
     private String tag2;
     private String tag3;
