@@ -4,12 +4,11 @@ import com.beeSpring.beespring.domain.shipping.DeliveryStatus;
 import com.beeSpring.beespring.dto.mypage.ProductWithSerialNumberDTO;
 import com.beeSpring.beespring.repository.bid.ProductRepository;
 import lombok.RequiredArgsConstructor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,13 +36,15 @@ public class MypageServiceImpl implements MypageService {
             ProductWithSerialNumberDTO productDTO = ProductWithSerialNumberDTO.builder()
                     .productId((String) objArray[0])
                     .paymentStatus((int) objArray[1])
-                    .deliveryStatus((DeliveryStatus) objArray[2])
-                    .serialNumber((String) objArray[3])
-                    .productName((String) objArray[4])
-                    .image1((String) objArray[5])
-                    .priceUnit((Integer) objArray[6])
-                    .startPrice((int) objArray[7])
-                    .bidCnt((int) objArray[8])
+                    .completeDate((LocalDateTime) objArray[2])
+                    .deliveryStatus((DeliveryStatus) objArray[3])
+                    .serialNumber((String) objArray[4])
+                    .productName((String) objArray[5])
+                    .image1((String) objArray[6])
+                    .priceUnit((Integer) objArray[7])
+                    .startPrice((int) objArray[8])
+                    .bidCnt((int) objArray[9])
+                    .nickName((String) objArray[10])
                     .build();
 
             products.add(productDTO);
