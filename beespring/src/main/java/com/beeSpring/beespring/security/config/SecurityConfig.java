@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -54,6 +55,7 @@ public class SecurityConfig {
     private CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
     @Bean
+    @Lazy
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -88,21 +90,25 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Lazy
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
+    @Lazy
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
+    @Lazy
     public OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService() {
         return new OidcUserService();
     }
 
     @Bean
+    @Lazy
     public OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
         return new DefaultOAuth2UserService();
     }
