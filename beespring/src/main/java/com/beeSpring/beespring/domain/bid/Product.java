@@ -4,8 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 
@@ -13,10 +16,13 @@ import java.time.LocalDateTime;
 @Table(name = "Product")
 @Table(name = "Product", catalog = "honeypot2")
 @Getter
-@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Product {
     @Id
-    @Column(name = "product_id")
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(name = "product_id", updatable = false, nullable = false)
     private String productId;
 
     @Column(name = "idol_id")
@@ -99,4 +105,8 @@ public class Product {
     private String requestId;
     private LocalDateTime requestTime;
     private String storageStatus;
+
+    public Product() {
+
+    }
 }
