@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/HoneyPotSystem-back.iml" filepath="$PROJECT_DIR$/.idea/HoneyPotSystem-back.iml" />
+      <module fileurl="file://$PROJECT_DIR$/beespring/beespring.iml" filepath="$PROJECT_DIR$/beespring/beespring.iml" />
     </modules>
   </component>
 </project>

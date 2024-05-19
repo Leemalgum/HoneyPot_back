@@ -1,2 +1,8 @@
 
 beespring/src/main/resources/application.properties
+.idea/dbnavigator.xml
+.idea/misc.xml
+beespring/database/config/mysql.cnf
+beespring/database/Dockerfile
+beespring/docker-compose.yml
+*.properties
