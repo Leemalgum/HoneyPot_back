@@ -13,5 +13,5 @@ public interface ShippingService {
 
     void deleteAddress(Long id);
 
-    List<ShippingAddress> getAddressesBySerialNumber(Long serialNumber);
+    List<ShippingAddress> getAddressesBySerialNumber(String serialNumber);
 }
