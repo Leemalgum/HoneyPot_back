@@ -2,6 +2,7 @@ package com.beeSpring.beespring.controller.mypage;
 
 import com.beeSpring.beespring.domain.shipping.ShippingAddress;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
+import com.beeSpring.beespring.dto.mypage.PaymentProductDTO;
 import com.beeSpring.beespring.dto.mypage.ProductWithSerialNumberDTO;
 import com.beeSpring.beespring.dto.shipping.ShippingAddressDTO;
 import com.beeSpring.beespring.service.mypage.MypageService;
@@ -16,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,16 +43,18 @@ public class MypageController {
         }
     }
 
-    @GetMapping(path = "/purchaseList/{serialNumber}")
-    public ResponseEntity<List<ProductWithSerialNumberDTO>> getPurchaseList(@PathVariable("serialNumber") String serialNumber) {
-        // serialNumber를 이용하여 ProductService를 통해 해당 serialNumber에 해당하는 상품 목록을 가져옵니다.
-        List<ProductWithSerialNumberDTO> productList = mypageService.getProductListBySerialNumber(serialNumber);
-        if (!productList.isEmpty()) {
-            // 상품 목록이 존재할 경우 200 OK 응답과 함께 데이터를 반환합니다.
-            return new ResponseEntity<>(productList, HttpStatus.OK);
-        } else {
-            // 상품 목록이 존재하지 않을 경우 404 Not Found 응답을 반환합니다.
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    // 제품 ID로 제품 정보를 조회하는 GET 요청 처리
+    @GetMapping("/productDetails")
+    public ResponseEntity<?> getProductDetails(@RequestParam String serialNumber, @RequestParam String productId) {
+        try {
+            PaymentProductDTO product = mypageService.getProductById(serialNumber, productId);
+            if (product != null) {
+                return ResponseEntity.ok(product);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("제품 정보 조회 중 오류가 발생했습니다.");
         }
     }
 
@@ -146,7 +148,7 @@ public class MypageController {
 
     //주소 파트
     @GetMapping("/mypage-address/{serialNumber}")
-    public ResponseEntity<List<ShippingAddress>> getAddressesBySerialNumber(@PathVariable Long serialNumber) {
+    public ResponseEntity<List<ShippingAddress>> getAddressesBySerialNumber(@PathVariable String serialNumber) {
         List<ShippingAddress> addresses = shippingService.getAddressesBySerialNumber(serialNumber);
         if (addresses.isEmpty()) {
             return ResponseEntity.notFound().build();

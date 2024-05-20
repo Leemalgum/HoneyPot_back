@@ -1,12 +1,12 @@
 package com.beeSpring.beespring.domain.shipping;
 
+import com.beeSpring.beespring.domain.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,7 +40,12 @@ public class ShippingAddress {
     @Column(name = "road_address")
     private String roadAddress;
 
-    @Column(name = "serial_number")
-    private Long serialNumber;
+//    @Column(name = "serial_number")
+//    private Long serialNumber;
+
+    @ManyToOne
+    @JoinColumn(name = "serial_number", nullable = false)
+    private User user;
+
 }
 

@@ -1,6 +1,10 @@
 package com.beeSpring.beespring.dto.bid;
 
 import com.beeSpring.beespring.domain.bid.Product;
+import com.beeSpring.beespring.domain.bid.StorageStatus;
+import com.beeSpring.beespring.domain.category.Idol;
+import com.beeSpring.beespring.domain.category.ProductType;
+import com.beeSpring.beespring.domain.user.User;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -40,9 +44,9 @@ public class ProductDTO {
     public Product toEntity(){
         return Product.builder()
                 .productId(productId)
-                .idolId(idolId)
-                .ptypeId(ptypeId)
-                .serialNumber(serialNumber)
+                .idol(Idol.builder().idolId(idolId).build())
+                .productType(ProductType.builder().ptypeId(ptypeId).build())
+                .user(User.builder().serialNumber(serialNumber).build())
                 .productName(productName)
                 .image1(image1)
                 .image2(image2)
@@ -59,7 +63,7 @@ public class ProductDTO {
                 .registrationDate(registrationDate)
                 .bidCnt(bidCnt)
                 .requestTime(requestTime)
-                .storageStatus(storageStatus)
+                .storageStatus(StorageStatus.valueOf(storageStatus))
                 .build();
     }
 }

@@ -1,32 +1,26 @@
 package com.beeSpring.beespring.service.mypage;
 
-import com.beeSpring.beespring.domain.shipping.DeliveryStatus;
-import com.beeSpring.beespring.dto.mypage.ProductWithSerialNumberDTO;
-import com.beeSpring.beespring.repository.bid.ProductRepository;
-import lombok.RequiredArgsConstructor;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.beeSpring.beespring.domain.shipping.DeliveryStatus;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
+import com.beeSpring.beespring.dto.mypage.PaymentProductDTO;
+import com.beeSpring.beespring.dto.mypage.ProductWithSerialNumberDTO;
 import com.beeSpring.beespring.repository.bid.ProductRepository;
 import jakarta.transaction.Transactional;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -95,5 +89,26 @@ public class MypageServiceImpl implements MypageService {
     @Transactional
     public void registerProduct(ProductDTO productDTO) {
         productRepository.save(productDTO.toEntity());
+    }
+
+    public PaymentProductDTO getProductById(String serialNumber, String productId) {
+//        Object product = productRepository.findByProductId(serialNumber, productId);
+//        Map<String, Object> productMap = (Map<String, Object>) product;
+//
+//        PaymentProductDTO productDTO = PaymentProductDTO.builder()
+//                .productId((String) productMap.get("productId"))
+//                .serialNumber((String) productMap.get("serialNumber"))
+//                .productName((String) productMap.get("productName"))
+//                .priceUnit((int) productMap.get("priceUnit"))
+//                .startPrice((int) productMap.get("startPrice"))
+//                .bidCnt((Integer) productMap.get("bidCnt"))
+//                .recipientName((String) productMap.get("recipientName"))
+//                .postCode((String) productMap.get("postCode"))
+//                .roadAddress((String) productMap.get("roadAddress"))
+//                .detailAddress((String) productMap.get("detailAddress"))
+//                .recipientPhone((String) productMap.get("recipientPhone"))
+//                .build();
+
+        return null;
     }
 }

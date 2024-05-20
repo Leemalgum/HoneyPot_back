@@ -1,8 +1,10 @@
 package com.beeSpring.beespring.service.shipping;
 
 import com.beeSpring.beespring.domain.shipping.ShippingAddress;
+import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.dto.shipping.ShippingAddressDTO;
 import com.beeSpring.beespring.repository.shipping.ShippingAddressRepository;
+import com.beeSpring.beespring.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,9 @@ public class ShippingServiceImpl implements ShippingService{
     @Autowired
     private ShippingAddressRepository shippingAddressRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public List<ShippingAddress> getAllAddresses() {
         return shippingAddressRepository.findAll();
     }
@@ -26,6 +31,8 @@ public class ShippingServiceImpl implements ShippingService{
 
     @Override
     public ShippingAddress saveAddress(ShippingAddressDTO addressDTO) {
+        User user = userRepository.findById(addressDTO.getSerialNumber())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user serial number"));
         ShippingAddress address = new ShippingAddress(
                 addressDTO.getAddressId(),
                 addressDTO.getAddressName(),
@@ -34,7 +41,8 @@ public class ShippingServiceImpl implements ShippingService{
                 addressDTO.getRecipientName(),
                 addressDTO.getRecipientPhone(),
                 addressDTO.getRoadAddress(),
-                addressDTO.getSerialNumber()
+//                addressDTO.getSerialNumber()
+                user
         );
         return shippingAddressRepository.save(address);
     }
@@ -45,7 +53,7 @@ public class ShippingServiceImpl implements ShippingService{
     }
 
     @Override
-    public List<ShippingAddress> getAddressesBySerialNumber(Long serialNumber) {
+    public List<ShippingAddress> getAddressesBySerialNumber(String serialNumber) {
         return shippingAddressRepository.findBySerialNumber(serialNumber);
     }
 }

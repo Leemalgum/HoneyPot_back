@@ -1,10 +1,12 @@
 package com.beeSpring.beespring.domain.bid;
 
+import com.beeSpring.beespring.domain.category.Idol;
+import com.beeSpring.beespring.domain.category.ProductType;
+import com.beeSpring.beespring.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
@@ -21,14 +23,17 @@ public class Product {
     @Column(name = "product_id", updatable = false, nullable = false)
     private String productId;
 
-    @Column(name = "idol_id")
-    private int idolId;
+    @ManyToOne
+    @JoinColumn(name = "idol_id", nullable = false)
+    private Idol idol;
 
-    @Column(name = "ptype_id")
-    private int ptypeId;
+    @ManyToOne
+    @JoinColumn(name = "ptype_id", nullable = false)
+    private ProductType productType;
 
-    @Column(name = "serial_number")
-    private String serialNumber;
+    @ManyToOne
+    @JoinColumn(name = "serial_number", nullable = false)
+    private User user;
 
     @Column(name = "product_name")
     private String productName;
@@ -78,8 +83,9 @@ public class Product {
     @Column(name = "request_time")
     private LocalDateTime requestTime;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "storage_status")
-    private String storageStatus;
+    private StorageStatus storageStatus;
 
     public Product() {
 
