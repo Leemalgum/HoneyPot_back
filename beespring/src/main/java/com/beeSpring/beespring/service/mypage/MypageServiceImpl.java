@@ -7,10 +7,14 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.beeSpring.beespring.domain.shipping.DeliveryStatus;
+import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.mypage.PaymentProductDTO;
 import com.beeSpring.beespring.dto.mypage.ProductWithSerialNumberDTO;
+import com.beeSpring.beespring.dto.user.UserDTO;
 import com.beeSpring.beespring.repository.bid.ProductRepository;
+import com.beeSpring.beespring.repository.user.UserIdolRepository;
+import com.beeSpring.beespring.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -28,6 +32,8 @@ public class MypageServiceImpl implements MypageService {
     private static final Logger logger = LoggerFactory.getLogger(MypageServiceImpl.class);
     private final ProductRepository productRepository;
     private final AmazonS3 s3Client;
+    private final UserRepository userRepository;
+    private final UserIdolRepository userIdolRepository;
 
 
     @Override
@@ -62,6 +68,7 @@ public class MypageServiceImpl implements MypageService {
         return products;
     }
 
+    //입고요청파트
     @Override
     public String storeImage(MultipartFile file) throws IOException {
         String objectName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
@@ -74,8 +81,8 @@ public class MypageServiceImpl implements MypageService {
             PutObjectRequest putRequest = new PutObjectRequest("beespring-bucket/requestImages", objectName, file.getInputStream(), metadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead);
             s3Client.putObject(putRequest);
-            logger.info("File uploaded successfully to S3. URL: {}", s3Client.getUrl("beespring-bucket", objectName).toString());
-            return s3Client.getUrl("beespring-bucket", objectName).toString();
+            logger.info("File uploaded successfully to S3. URL: {}", s3Client.getUrl("beespring-bucket/requestImages", objectName).toString());
+            return s3Client.getUrl("beespring-bucket/requestImages", objectName).toString();
         } catch (AmazonServiceException e) {
             logger.error("Failed to upload file to S3. AWS error message: {}", e.getErrorMessage());
             throw new IOException("Failed to upload file to S3.", e);
@@ -110,5 +117,75 @@ public class MypageServiceImpl implements MypageService {
 //                .build();
 
         return null;
+    }
+
+    //프로필 파트
+        @Override
+        public UserDTO getProfile(String serialNumber) {
+        User user = userRepository.findBySerialNumber(serialNumber)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return new UserDTO(
+                user.getSerialNumber(),
+                user.getUserId(),
+                user.getRoleId(),
+                user.getPassword(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getNickname(),
+                user.getEmail(),
+                user.getMobileNumber(),
+                user.getRegistrationDate(),
+                user.getBirthdate(),
+                user.getReportedCnt(),
+                user.getState(),
+                user.getReason(),
+                user.getSuspended(),
+                user.getModDate(),
+                user.getRefreshToken(),
+                user.getProfileImage(),
+                user.getTag1(),
+                user.getTag2(),
+                user.getTag3()
+        );
+    }
+    @Override
+    @Transactional
+    public void saveProfile(String serialNumber, UserDTO userDTO, MultipartFile profileImageFile) throws IOException {
+        User user = userRepository.findBySerialNumber(serialNumber)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (profileImageFile != null && !profileImageFile.isEmpty()) {
+            String profileImageUrl = storeProfileImage(profileImageFile);
+            user.setProfileImage(profileImageUrl);
+        }
+
+        user.setNickname(userDTO.getNickname());
+        user.setTag1(userDTO.getTag1());
+        user.setTag2(userDTO.getTag2());
+        user.setTag3(userDTO.getTag3());
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public String storeProfileImage(MultipartFile file) throws IOException {
+        String objectName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(file.getContentType());
+        metadata.setContentLength(file.getSize());
+
+        try {
+            PutObjectRequest putRequest = new PutObjectRequest("beespring-bucket/profile", objectName, file.getInputStream(), metadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead);
+            s3Client.putObject(putRequest);
+            logger.info("File uploaded successfully to S3. URL: {}", s3Client.getUrl("beespring-bucket", objectName).toString());
+            return s3Client.getUrl("beespring-bucket/profile", objectName).toString();
+        } catch (AmazonServiceException e) {
+            logger.error("Failed to upload file to S3. AWS error message: {}", e.getErrorMessage());
+            throw new IOException("Failed to upload file to S3.", e);
+        } catch (SdkClientException e) {
+            logger.error("Failed to upload file to S3. SDK error message: {}", e.getMessage());
+            throw new IOException("Failed to upload file to S3.", e);
+        }
     }
 }

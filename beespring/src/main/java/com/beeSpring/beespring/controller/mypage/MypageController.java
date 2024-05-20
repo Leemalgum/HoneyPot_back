@@ -5,16 +5,19 @@ import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.mypage.PaymentProductDTO;
 import com.beeSpring.beespring.dto.mypage.ProductWithSerialNumberDTO;
 import com.beeSpring.beespring.dto.shipping.ShippingAddressDTO;
+import com.beeSpring.beespring.dto.user.UserDTO;
 import com.beeSpring.beespring.service.mypage.MypageService;
 import com.beeSpring.beespring.service.shipping.ShippingService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -181,4 +184,25 @@ public class MypageController {
         shippingService.deleteAddress(id);
         return ResponseEntity.noContent().build();
     }
+
+    //프로필 수정 파트
+    @GetMapping("/mypage-profile/{serialNumber}")
+    public ResponseEntity<UserDTO> getProfile(@PathVariable String serialNumber) {
+        UserDTO profileDTO = mypageService.getProfile(serialNumber);
+        return ResponseEntity.ok(profileDTO);
+    }
+
+    @PostMapping(value = "mypage-profile/{serialNumber}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<String> saveProfile(
+            @PathVariable String serialNumber,
+            @RequestPart("userDTO") UserDTO userDTO,
+            @RequestPart(value = "profileImageFile", required = false) MultipartFile profileImageFile) {
+        try {
+            mypageService.saveProfile(serialNumber, userDTO, profileImageFile);
+            return ResponseEntity.ok("Profile updated successfully");
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Failed to update profile: " + e.getMessage());
+        }
+    }
+
 }
