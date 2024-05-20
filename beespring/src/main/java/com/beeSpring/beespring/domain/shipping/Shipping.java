@@ -3,11 +3,15 @@ package com.beeSpring.beespring.domain.shipping;
 
 import com.beeSpring.beespring.domain.bid.BidResult;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Shipping")
+@Getter
+@NoArgsConstructor
 public class Shipping {
     @Id
     @Column(name = "shipping_id")

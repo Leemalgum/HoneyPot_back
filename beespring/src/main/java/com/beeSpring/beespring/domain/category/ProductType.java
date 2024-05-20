@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.TypeAlias;
@@ -12,6 +14,8 @@ import org.springframework.data.annotation.TypeAlias;
 @Table(name = "Product_type")
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class ProductType {
     @Id
     @Column(name = "ptype_id")
