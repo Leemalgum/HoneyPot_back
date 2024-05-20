@@ -1,9 +1,10 @@
 package com.beeSpring.beespring.service.bid;
 
 import com.beeSpring.beespring.domain.bid.Product;
-import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.bid.ProductWithIdolNameDTO;
+import com.beeSpring.beespring.dto.main.MainProductDTO;
 import com.beeSpring.beespring.repository.bid.ProductRepository;
+import com.beeSpring.beespring.repository.main.MainProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public class BidServiceImpl implements BidService{
 
     private final ProductRepository productRepository;
+    private final MainProductRepository mainProductRepository;
     public List<ProductWithIdolNameDTO> getAllProductsWithIdolName(){
         List<Object[]> productList = productRepository.findAllWithIdolName();
         List<ProductWithIdolNameDTO> products = new ArrayList<>();
@@ -26,8 +28,8 @@ public class BidServiceImpl implements BidService{
             productDTO.setProductId(product.getProductId());
             productDTO.setProductName(product.getProductName());
             productDTO.setIdolName(idolName);
-            productDTO.setPtypeId(product.getPtypeId());
-            productDTO.setSerialNumber(product.getSerialNumber());
+            productDTO.setPtypeId(product.getProductType().getPtypeId());
+            productDTO.setSerialNumber(product.getUser().getSerialNumber());
             productDTO.setImage1(product.getImage1());
             productDTO.setImage2(product.getImage2());
             productDTO.setImage3(product.getImage3());
@@ -43,7 +45,7 @@ public class BidServiceImpl implements BidService{
             productDTO.setRegistrationDate(product.getRegistrationDate());
             productDTO.setBidCnt(product.getBidCnt());
             productDTO.setRequestTime(product.getRequestTime());
-            productDTO.setStorageStatus(product.getStorageStatus());
+            productDTO.setStorageStatus(String.valueOf(product.getStorageStatus()));
 
             products.add(productDTO);
         }
@@ -52,13 +54,16 @@ public class BidServiceImpl implements BidService{
     }
 
     @Override
-    public ProductDTO getProductById(String productId) {
-        Product product = productRepository.findById(productId).stream().findFirst().get();
-        ProductDTO productDTO = ProductDTO.builder()
+    public MainProductDTO getProductById(String productId) {
+        Product product = mainProductRepository.findById(productId).stream().findFirst().get();
+        String userId = getUserIdByProductId(productId);
+
+        MainProductDTO productDTO = MainProductDTO.builder()
                 .productId(product.getProductId())
-                .idolId(product.getIdolId())
-                .ptypeId(product.getPtypeId())
-                .serialNumber(product.getSerialNumber())
+                .idolId(product.getIdol().getIdolId())
+                .ptypeId(product.getProductType().getPtypeId())
+                .userId(userId)
+                .serialNumber(product.getProductId())
                 .productName(product.getProductName())
                 .image1(product.getImage1())
                 .image2(product.getImage2())
@@ -75,9 +80,15 @@ public class BidServiceImpl implements BidService{
                 .registrationDate(product.getRegistrationDate())
                 .bidCnt(product.getBidCnt())
                 .requestTime(product.getRequestTime())
-                .storageStatus(product.getStorageStatus())
+                .storageStatus(String.valueOf(product.getStorageStatus()))
                 .build();
+
         return productDTO;
     }
 
+    @Override
+    public String getUserIdByProductId(String productId) {
+        String userId = mainProductRepository.findUserIdByProductId(productId);
+        return userId;
+    }
 }

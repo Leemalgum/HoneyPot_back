@@ -1,7 +1,9 @@
 package com.beeSpring.beespring.service.main;
 
+
+import com.beeSpring.beespring.dto.category.IdolDTO;
 import com.beeSpring.beespring.dto.main.MainProductDTO;
-import org.springframework.stereotype.Service;
+
 
 import java.util.Date;
 import java.util.List;
@@ -9,8 +11,10 @@ import java.util.List;
 
 public interface MainService {
 
+    public List<IdolDTO> showIdolCategoryName(String serialNumber);
 
-    public List<MainProductDTO> filterByCategory();
+    public List<MainProductDTO> filterByCategory(String idolName);
+
 
     public List<MainProductDTO> filterByView();
 
@@ -18,6 +22,4 @@ public interface MainService {
 
     public List<MainProductDTO> filterByDeadLine();
 
-
-    public String getUserIdByProductId(String productId);
 }
