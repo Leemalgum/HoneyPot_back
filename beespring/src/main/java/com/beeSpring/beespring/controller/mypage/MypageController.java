@@ -67,8 +67,9 @@ public class MypageController {
             @RequestParam("productInfo") String productInfo,
             @RequestParam("auctionDays") int auctionDays,
             @RequestParam("auctionHours") int auctionHours,
-            @RequestParam("categoryName") String categoryName,
-            @RequestParam("tagName") String tagName,
+
+            @RequestParam("categoryName") int categoryName,
+            @RequestParam("tagName") int tagName,
             @RequestParam("image1") MultipartFile image1,
             @RequestParam("image2") MultipartFile image2,
             @RequestParam(value = "image3", required = false) MultipartFile image3,
@@ -78,9 +79,8 @@ public class MypageController {
         log.info("registerProduct 메서드 시작");
 
         try {
-            // 아이돌 이름의 첫 두 글자와 UUID를 조합하여 productId 생성
-            String idolPrefix = tagName.substring(0, Math.min(tagName.length(), 2)).toUpperCase();
-            String productId = idolPrefix + "-" + UUID.randomUUID().toString();
+
+            String productId = UUID.randomUUID().toString();
             ProductDTO productDTO = new ProductDTO();
             productDTO.setProductId(productId);
             productDTO.setProductName(productName);
@@ -124,8 +124,8 @@ public class MypageController {
             }
 
             productDTO.setSerialNumber("123456789");
-            productDTO.setPtypeId(mapCategoryToId(categoryName));
-            productDTO.setIdolId(mapTagToId(tagName));
+            productDTO.setPtypeId(categoryName);
+            productDTO.setIdolId(tagName);
             productDTO.setTimeLimit(auctionDays*24+auctionHours);
             productDTO.setStorageStatus("PENDING");
             productDTO.setView(0);
@@ -143,46 +143,6 @@ public class MypageController {
         }
     }
 
-    private int mapCategoryToId(String categoryName) {
-        Map<String, Integer> categoryMap = Map.of(
-                "Photo", 1,
-                "Official Fanlight", 2,
-                "Fashion", 3,
-                "Acc", 4,
-                "Stationery", 5,
-                "DVD", 6,
-                "Music", 7,
-                "Living", 8
-        );
-        return categoryMap.getOrDefault(categoryName, 0);
-    }
-
-    private int mapTagToId(String tagName) {
-        Map<String, Integer> tagMap = Map.ofEntries(
-                Map.entry("AESPA", 1),
-                Map.entry("BLACKPINK", 2),
-                Map.entry("BOYNEXTDOOR", 3),
-                Map.entry("BTS", 4),
-                Map.entry("ENHYPEN", 5),
-                Map.entry("EXO", 6),
-                Map.entry("GIRLSRENERATION", 7),
-                Map.entry("ITZY", 8),
-                Map.entry("LESSERAFIM", 9),
-                Map.entry("NCT", 10),
-                Map.entry("NEWJEANS", 11),
-                Map.entry("NMIXX", 12),
-                Map.entry("FROMIS_9", 13),
-                Map.entry("RIIZE", 14),
-                Map.entry("STRAYKIDS", 15),
-                Map.entry("SEVENTEEN", 16),
-                Map.entry("SHINEE", 17),
-                Map.entry("SUPERJUNIOR", 18),
-                Map.entry("TXT", 19),
-                Map.entry("TWICE", 20),
-                Map.entry("WINNER", 21)
-        );
-        return tagMap.getOrDefault(tagName, 0);
-    }
 
     //주소 파트
     @GetMapping("/mypage-address/{serialNumber}")
