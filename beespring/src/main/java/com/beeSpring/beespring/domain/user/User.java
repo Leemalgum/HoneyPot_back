@@ -2,6 +2,7 @@ package com.beeSpring.beespring.domain.user;
 
 import com.beeSpring.beespring.domain.bid.Product;
 import com.beeSpring.beespring.domain.shipping.ShippingAddress;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -77,8 +78,7 @@ public class User {
     private String refreshToken;
 
     @Column(name="profile_image")
-    @Lob
-    private byte[] profileImage;
+    private String profileImage;
 
     @Column(name = "tag1")
     private String tag1;
@@ -92,7 +92,8 @@ public class User {
     @Column(name = "access_token")
     private String accessToken;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<ShippingAddress> shippingAddresses;
 
     @OneToMany(mappedBy = "user")
