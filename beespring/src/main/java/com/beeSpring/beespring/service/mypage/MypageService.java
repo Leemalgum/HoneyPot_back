@@ -1,6 +1,7 @@
 package com.beeSpring.beespring.service.mypage;
 
 import com.beeSpring.beespring.dto.bid.ProductDTO;
+import com.beeSpring.beespring.dto.mypage.PaymentProductDTO;
 import com.beeSpring.beespring.dto.mypage.ProductWithSerialNumberDTO;
 import com.beeSpring.beespring.domain.bid.Product;
 import com.beeSpring.beespring.repository.bid.ProductRepository;
@@ -18,5 +19,7 @@ public interface MypageService {
 
     String storeImage(MultipartFile file) throws IOException;
     void registerProduct(ProductDTO productDTO);
+
+    PaymentProductDTO getProductById(String serialNumber, String productId);
 
 }
