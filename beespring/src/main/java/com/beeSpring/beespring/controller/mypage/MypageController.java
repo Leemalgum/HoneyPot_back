@@ -185,29 +185,36 @@ public class MypageController {
     }
 
     //주소 파트
-    @GetMapping("/{id}")
-    public ResponseEntity<ShippingAddress> getAddressById(@PathVariable Long id) {
-        Optional<ShippingAddress> address = shippingService.getAddressById(id);
-        return address.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/mypage-address/{serialNumber}")
+    public ResponseEntity<List<ShippingAddress>> getAddressesBySerialNumber(@PathVariable Long serialNumber) {
+        List<ShippingAddress> addresses = shippingService.getAddressesBySerialNumber(serialNumber);
+        if (addresses.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(addresses);
+        }
     }
 
-    @PostMapping
-    public ShippingAddress createAddress(@RequestBody ShippingAddressDTO addressDTO) {
-        return shippingService.saveAddress(addressDTO);
+    @PostMapping("/mypage-address")
+    public ResponseEntity<ShippingAddress> createAddress(@RequestBody ShippingAddressDTO addressDTO) {
+        log.info("Received addressDTO: {}", addressDTO);
+        ShippingAddress createdAddress = shippingService.saveAddress(addressDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdAddress);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/mypage-address/{id}")
     public ResponseEntity<ShippingAddress> updateAddress(@PathVariable Long id, @RequestBody ShippingAddressDTO addressDTO) {
         Optional<ShippingAddress> existingAddress = shippingService.getAddressById(id);
         if (existingAddress.isPresent()) {
             addressDTO.setAddressId(id);
-            return ResponseEntity.ok(shippingService.saveAddress(addressDTO));
+            ShippingAddress updatedAddress = shippingService.saveAddress(addressDTO);
+            return ResponseEntity.ok(updatedAddress);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/mypage-address/{id}")
     public ResponseEntity<Void> deleteAddress(@PathVariable Long id) {
         shippingService.deleteAddress(id);
         return ResponseEntity.noContent().build();
