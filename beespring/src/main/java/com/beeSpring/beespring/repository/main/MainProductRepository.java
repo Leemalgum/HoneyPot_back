@@ -40,6 +40,7 @@ public interface MainProductRepository  extends JpaRepository<Product, String> {
     List<Object[]> findByCategory(String idolName);
 
 
+
     @Query("SELECT p, i.idolName,  t.ptypeName, u.userId " +
             "            FROM Product p\n" +
             "            JOIN Idol i ON p.idolId = i.idolId\n" +

@@ -46,7 +46,6 @@ public class MainController {
 //    }
 
 
-
     @GetMapping(path = "/filterByView")
     public List<MainProductDTO> showProductsFilterByView(){
         return mainService.filterByView();
