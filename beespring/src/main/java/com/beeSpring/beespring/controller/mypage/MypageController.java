@@ -67,6 +67,7 @@ public class MypageController {
             @RequestParam("productInfo") String productInfo,
             @RequestParam("auctionDays") int auctionDays,
             @RequestParam("auctionHours") int auctionHours,
+
             @RequestParam("categoryName") int categoryName,
             @RequestParam("tagName") int tagName,
             @RequestParam("image1") MultipartFile image1,
@@ -78,6 +79,7 @@ public class MypageController {
         log.info("registerProduct 메서드 시작");
 
         try {
+
             String productId = UUID.randomUUID().toString();
             ProductDTO productDTO = new ProductDTO();
             productDTO.setProductId(productId);

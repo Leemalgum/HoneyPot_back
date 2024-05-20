@@ -76,6 +76,7 @@ public class MypageServiceImpl implements MypageService {
         metadata.setContentLength(file.getSize());
 
         try {
+
             PutObjectRequest putRequest = new PutObjectRequest("beespring-bucket/requestImages", objectName, file.getInputStream(), metadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead);
             s3Client.putObject(putRequest);
