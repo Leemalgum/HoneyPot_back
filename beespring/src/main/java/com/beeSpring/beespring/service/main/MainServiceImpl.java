@@ -1,7 +1,8 @@
 package com.beeSpring.beespring.service.main;
 
 import com.beeSpring.beespring.domain.bid.Product;
-import com.beeSpring.beespring.domain.user.User;
+import com.beeSpring.beespring.domain.category.Idol;
+import com.beeSpring.beespring.dto.category.IdolDTO;
 import com.beeSpring.beespring.dto.main.MainProductDTO;
 import com.beeSpring.beespring.repository.main.MainProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,24 +24,45 @@ public class MainServiceImpl implements MainService {
 
     private final MainProductRepository mainProductRepository;
 
+
     @Override
-    public List<MainProductDTO> filterByCategory() {
+    public List<IdolDTO> showIdolCategoryName(String serialNumber) {
+
+        List<Object[]> idolList = mainProductRepository.findIdolName(serialNumber);
+        List<IdolDTO> idols = new ArrayList<>();
+
+        for(Object[] objArray : idolList) {
+            int idolId = (int) objArray[0];
+            String idolName = (String) objArray[1];
+
+            IdolDTO idolDTO = new IdolDTO();
+            idolDTO.setIdolId(idolId);
+            idolDTO.setIdolName(idolName);
+
+            idols.add(idolDTO);
+        }
+
+        return idols;
+    }
+
+    @Override
+    public List<MainProductDTO> filterByCategory(String idolName) {
 
 //        List<String> idolName = productRepository.findIdolName();
 //        List<String> idolName = productRepository.findIdolName(String serialNumber);
-        List<Object[]> productList = mainProductRepository.findByCategory();
+        List<Object[]> productList = mainProductRepository.findByCategory(idolName);
         List<MainProductDTO> product = new ArrayList<>();
 
         for (Object[] objArray : productList) {
             Product products = (Product)objArray[0];
-            String idolName = (String) objArray[1];
+            String idolNames = (String) objArray[1];
             String pTypeName = (String) objArray[2];
             String userId = (String)objArray[3];
 
             MainProductDTO productDTO = new MainProductDTO();
 
             productDTO.setUserId(userId);
-            productDTO.setIdolName(idolName);
+            productDTO.setIdolName(idolNames);
             productDTO.setPtypeName(pTypeName);
 
             productDTO.setProductId(products.getProductId());
@@ -183,7 +205,6 @@ public class MainServiceImpl implements MainService {
 
             productDTO.setProductId(products.getProductId());
             productDTO.setProductName(products.getProductName());
-            productDTO.setTimeLimit(products.getTimeLimit());
             productDTO.setIdolId(products.getIdolId());
             productDTO.setPtypeId(products.getPtypeId());
             productDTO.setImage1(products.getImage1());
@@ -207,12 +228,6 @@ public class MainServiceImpl implements MainService {
             product.add(productDTO);
         }
         return product;
-    }
-
-    @Override
-    public String getUserIdByProductId(String productId) {
-        String userId = mainProductRepository.findUserIdByProductId(productId);
-        return userId;
     }
 
 

@@ -2,6 +2,7 @@ package com.beeSpring.beespring.repository.main;
 
 import com.beeSpring.beespring.domain.bid.Product;
 import com.beeSpring.beespring.domain.category.Idol;
+import com.beeSpring.beespring.dto.category.IdolDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,9 +17,12 @@ public interface MainProductRepository  extends JpaRepository<Product, String> {
 
 
     //회원별 관심 idol 목록 불러오기
-//    @Query("SELECT i.idolName FROM UserIdol ui JOIN Idol i ON ui.idolId = i.idolId JOIN User u ON ui.serialNumber = u.serialNumber")
-//    List<String> findIdolName(String serialNumber);
-////    List<String> findIdolsByUserId(@Param("serialNumber") String serialNumber);
+    @Query("SELECT i.idolId, i.idolName " +
+            "FROM UserIdol ui " +
+            "JOIN Idol i ON ui.idolId = i.idolId " +
+            "where ui.serialNumber = ?1")
+    List<Object[]> findIdolName(@Param("serialNumber") String serialNumber);
+//    List<String> findIdolsByUserId(@Param("serialNumber") String serialNumber);
 
 
 
@@ -29,10 +33,11 @@ public interface MainProductRepository  extends JpaRepository<Product, String> {
             "JOIN ProductType t ON p.ptypeId  = t.ptypeId " +
             "JOIN UserIdol ui ON ui.idolId = p.idolId " +
             "JOIN User u ON ui.serialNumber = u.serialNumber " +
+            "WHERE i.idolName = ?1" +
             "ORDER BY rand() DESC LIMIT 4")
 
 //    List<Object[]> findByCategory(List<String> idolName);
-    List<Object[]> findByCategory();
+    List<Object[]> findByCategory(String idolName);
 
 
     @Query("SELECT p, i.idolName,  t.ptypeName, u.userId " +

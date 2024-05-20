@@ -44,7 +44,7 @@ public class MainProductDTO {
     private int startPrice;
     private int price;
     private long view;
-    private LocalDateTime timeLimit;
+    private int timeLimit;
     private LocalDateTime registrationDate;
 
 
