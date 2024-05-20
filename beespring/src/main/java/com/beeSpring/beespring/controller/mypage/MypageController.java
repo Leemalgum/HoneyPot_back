@@ -148,7 +148,7 @@ public class MypageController {
 
     //주소 파트
     @GetMapping("/mypage-address/{serialNumber}")
-    public ResponseEntity<List<ShippingAddress>> getAddressesBySerialNumber(@PathVariable Long serialNumber) {
+    public ResponseEntity<List<ShippingAddress>> getAddressesBySerialNumber(@PathVariable String serialNumber) {
         List<ShippingAddress> addresses = shippingService.getAddressesBySerialNumber(serialNumber);
         if (addresses.isEmpty()) {
             return ResponseEntity.notFound().build();
