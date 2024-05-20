@@ -3,7 +3,10 @@ package com.beeSpring.beespring.service.bid;
 import com.beeSpring.beespring.domain.bid.Product;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.bid.ProductWithIdolNameDTO;
+import com.beeSpring.beespring.dto.main.MainProductDTO;
 import com.beeSpring.beespring.repository.bid.ProductRepository;
+import com.beeSpring.beespring.repository.main.MainProductRepository;
+import com.beeSpring.beespring.service.main.MainServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,7 @@ import java.util.List;
 public class BidServiceImpl implements BidService{
 
     private final ProductRepository productRepository;
+    private final MainProductRepository mainProductRepository;
     public List<ProductWithIdolNameDTO> getAllProductsWithIdolName(){
         List<Object[]> productList = productRepository.findAllWithIdolName();
         List<ProductWithIdolNameDTO> products = new ArrayList<>();
@@ -52,12 +56,15 @@ public class BidServiceImpl implements BidService{
     }
 
     @Override
-    public ProductDTO getProductById(String productId) {
-        Product product = productRepository.findById(productId).stream().findFirst().get();
-        ProductDTO productDTO = ProductDTO.builder()
+    public MainProductDTO getProductById(String productId) {
+        Product product = mainProductRepository.findById(productId).stream().findFirst().get();
+        String userId = getUserIdByProductId(productId);
+
+        MainProductDTO productDTO = MainProductDTO.builder()
                 .productId(product.getProductId())
                 .idolId(product.getIdolId())
                 .ptypeId(product.getPtypeId())
+                .userId(userId)
                 .serialNumber(product.getSerialNumber())
                 .productName(product.getProductName())
                 .image1(product.getImage1())
@@ -77,7 +84,13 @@ public class BidServiceImpl implements BidService{
                 .requestTime(product.getRequestTime())
                 .storageStatus(product.getStorageStatus())
                 .build();
+
         return productDTO;
     }
 
+    @Override
+    public String getUserIdByProductId(String productId) {
+        String userId = mainProductRepository.findUserIdByProductId(productId);
+        return userId;
+    }
 }

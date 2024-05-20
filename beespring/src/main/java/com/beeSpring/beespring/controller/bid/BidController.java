@@ -2,6 +2,7 @@ package com.beeSpring.beespring.controller.bid;
 
 import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.bid.ProductWithIdolNameDTO;
+import com.beeSpring.beespring.dto.main.MainProductDTO;
 import com.beeSpring.beespring.service.bid.BidService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -34,10 +35,9 @@ public class BidController {
      * @return
      */
     @GetMapping(path = "/bid-details/{productId}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable("productId") String productId) {
-        System.out.println(productId);
+    public ResponseEntity<MainProductDTO> getProductById(@PathVariable("productId") String productId) {
         // productId를 이용하여 ProductService를 통해 상품 데이터를 가져옵니다.
-        ProductDTO productDTO = bidService.getProductById(productId);
+        MainProductDTO productDTO = bidService.getProductById(productId);
         if (productDTO != null) {
             // 상품 데이터가 존재할 경우 200 OK 응답과 함께 데이터를 반환합니다.
             return new ResponseEntity<>(productDTO, HttpStatus.OK);
