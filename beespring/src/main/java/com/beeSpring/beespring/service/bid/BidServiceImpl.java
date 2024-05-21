@@ -1,12 +1,10 @@
 package com.beeSpring.beespring.service.bid;
 
 import com.beeSpring.beespring.domain.bid.Product;
-import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.bid.ProductWithIdolNameDTO;
 import com.beeSpring.beespring.dto.main.MainProductDTO;
 import com.beeSpring.beespring.repository.bid.ProductRepository;
 import com.beeSpring.beespring.repository.main.MainProductRepository;
-import com.beeSpring.beespring.service.main.MainServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +28,8 @@ public class BidServiceImpl implements BidService{
             productDTO.setProductId(product.getProductId());
             productDTO.setProductName(product.getProductName());
             productDTO.setIdolName(idolName);
-            productDTO.setPtypeId(product.getPtypeId());
-            productDTO.setSerialNumber(product.getSerialNumber());
+            productDTO.setPtypeId(product.getProductType().getPtypeId());
+            productDTO.setSerialNumber(product.getUser().getSerialNumber());
             productDTO.setImage1(product.getImage1());
             productDTO.setImage2(product.getImage2());
             productDTO.setImage3(product.getImage3());
@@ -47,7 +45,7 @@ public class BidServiceImpl implements BidService{
             productDTO.setRegistrationDate(product.getRegistrationDate());
             productDTO.setBidCnt(product.getBidCnt());
             productDTO.setRequestTime(product.getRequestTime());
-            productDTO.setStorageStatus(product.getStorageStatus());
+            productDTO.setStorageStatus(String.valueOf(product.getStorageStatus()));
 
             products.add(productDTO);
         }
@@ -62,10 +60,10 @@ public class BidServiceImpl implements BidService{
 
         MainProductDTO productDTO = MainProductDTO.builder()
                 .productId(product.getProductId())
-                .idolId(product.getIdolId())
-                .ptypeId(product.getPtypeId())
+                .idolId(product.getIdol().getIdolId())
+                .ptypeId(product.getProductType().getPtypeId())
                 .userId(userId)
-                .serialNumber(product.getSerialNumber())
+                .serialNumber(product.getProductId())
                 .productName(product.getProductName())
                 .image1(product.getImage1())
                 .image2(product.getImage2())
@@ -82,7 +80,7 @@ public class BidServiceImpl implements BidService{
                 .registrationDate(product.getRegistrationDate())
                 .bidCnt(product.getBidCnt())
                 .requestTime(product.getRequestTime())
-                .storageStatus(product.getStorageStatus())
+                .storageStatus(String.valueOf(product.getStorageStatus()))
                 .build();
 
         return productDTO;

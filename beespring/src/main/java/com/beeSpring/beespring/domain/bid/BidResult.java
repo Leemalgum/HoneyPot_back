@@ -18,12 +18,14 @@ public class BidResult {
     @Column(name = "order_id")
     private String orderId;
 
-    @Column(name = "product_id")
-    private String productId;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(name = "payment_status")
     private int paymentStatus;
 
+    @Column(name = "result")
     @Enumerated(EnumType.STRING)
     private BidResultStatus result;
 

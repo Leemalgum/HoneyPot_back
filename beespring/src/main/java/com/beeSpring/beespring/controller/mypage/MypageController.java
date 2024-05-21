@@ -2,21 +2,24 @@ package com.beeSpring.beespring.controller.mypage;
 
 import com.beeSpring.beespring.domain.shipping.ShippingAddress;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
+import com.beeSpring.beespring.dto.mypage.PaymentProductDTO;
 import com.beeSpring.beespring.dto.mypage.ProductWithSerialNumberDTO;
 import com.beeSpring.beespring.dto.shipping.ShippingAddressDTO;
+import com.beeSpring.beespring.dto.user.UserDTO;
 import com.beeSpring.beespring.service.mypage.MypageService;
 import com.beeSpring.beespring.service.shipping.ShippingService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,16 +46,18 @@ public class MypageController {
         }
     }
 
-    @GetMapping(path = "/purchaseList/{serialNumber}")
-    public ResponseEntity<List<ProductWithSerialNumberDTO>> getPurchaseList(@PathVariable("serialNumber") String serialNumber) {
-        // serialNumber를 이용하여 ProductService를 통해 해당 serialNumber에 해당하는 상품 목록을 가져옵니다.
-        List<ProductWithSerialNumberDTO> productList = mypageService.getProductListBySerialNumber(serialNumber);
-        if (!productList.isEmpty()) {
-            // 상품 목록이 존재할 경우 200 OK 응답과 함께 데이터를 반환합니다.
-            return new ResponseEntity<>(productList, HttpStatus.OK);
-        } else {
-            // 상품 목록이 존재하지 않을 경우 404 Not Found 응답을 반환합니다.
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    // 제품 ID로 제품 정보를 조회하는 GET 요청 처리
+    @GetMapping("/productDetails")
+    public ResponseEntity<?> getProductDetails(@RequestParam String serialNumber, @RequestParam String productId) {
+        try {
+            PaymentProductDTO product = mypageService.getProductById(serialNumber, productId);
+            if (product != null) {
+                return ResponseEntity.ok(product);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("제품 정보 조회 중 오류가 발생했습니다.");
         }
     }
 
@@ -67,8 +72,9 @@ public class MypageController {
             @RequestParam("productInfo") String productInfo,
             @RequestParam("auctionDays") int auctionDays,
             @RequestParam("auctionHours") int auctionHours,
-            @RequestParam("categoryName") String categoryName,
-            @RequestParam("tagName") String tagName,
+
+            @RequestParam("categoryName") int categoryName,
+            @RequestParam("tagName") int tagName,
             @RequestParam("image1") MultipartFile image1,
             @RequestParam("image2") MultipartFile image2,
             @RequestParam(value = "image3", required = false) MultipartFile image3,
@@ -78,9 +84,8 @@ public class MypageController {
         log.info("registerProduct 메서드 시작");
 
         try {
-            // 아이돌 이름의 첫 두 글자와 UUID를 조합하여 productId 생성
-            String idolPrefix = tagName.substring(0, Math.min(tagName.length(), 2)).toUpperCase();
-            String productId = idolPrefix + "-" + UUID.randomUUID().toString();
+
+            String productId = UUID.randomUUID().toString();
             ProductDTO productDTO = new ProductDTO();
             productDTO.setProductId(productId);
             productDTO.setProductName(productName);
@@ -124,8 +129,8 @@ public class MypageController {
             }
 
             productDTO.setSerialNumber("123456789");
-            productDTO.setPtypeId(mapCategoryToId(categoryName));
-            productDTO.setIdolId(mapTagToId(tagName));
+            productDTO.setPtypeId(categoryName);
+            productDTO.setIdolId(tagName);
             productDTO.setTimeLimit(auctionDays*24+auctionHours);
             productDTO.setStorageStatus("PENDING");
             productDTO.setView(0);
@@ -143,50 +148,10 @@ public class MypageController {
         }
     }
 
-    private int mapCategoryToId(String categoryName) {
-        Map<String, Integer> categoryMap = Map.of(
-                "Photo", 1,
-                "Official Fanlight", 2,
-                "Fashion", 3,
-                "Acc", 4,
-                "Stationery", 5,
-                "DVD", 6,
-                "Music", 7,
-                "Living", 8
-        );
-        return categoryMap.getOrDefault(categoryName, 0);
-    }
-
-    private int mapTagToId(String tagName) {
-        Map<String, Integer> tagMap = Map.ofEntries(
-                Map.entry("AESPA", 1),
-                Map.entry("BLACKPINK", 2),
-                Map.entry("BOYNEXTDOOR", 3),
-                Map.entry("BTS", 4),
-                Map.entry("ENHYPEN", 5),
-                Map.entry("EXO", 6),
-                Map.entry("GIRLSRENERATION", 7),
-                Map.entry("ITZY", 8),
-                Map.entry("LESSERAFIM", 9),
-                Map.entry("NCT", 10),
-                Map.entry("NEWJEANS", 11),
-                Map.entry("NMIXX", 12),
-                Map.entry("FROMIS_9", 13),
-                Map.entry("RIIZE", 14),
-                Map.entry("STRAYKIDS", 15),
-                Map.entry("SEVENTEEN", 16),
-                Map.entry("SHINEE", 17),
-                Map.entry("SUPERJUNIOR", 18),
-                Map.entry("TXT", 19),
-                Map.entry("TWICE", 20),
-                Map.entry("WINNER", 21)
-        );
-        return tagMap.getOrDefault(tagName, 0);
-    }
 
     //주소 파트
     @GetMapping("/mypage-address/{serialNumber}")
-    public ResponseEntity<List<ShippingAddress>> getAddressesBySerialNumber(@PathVariable Long serialNumber) {
+    public ResponseEntity<List<ShippingAddress>> getAddressesBySerialNumber(@PathVariable String serialNumber) {
         List<ShippingAddress> addresses = shippingService.getAddressesBySerialNumber(serialNumber);
         if (addresses.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -219,4 +184,25 @@ public class MypageController {
         shippingService.deleteAddress(id);
         return ResponseEntity.noContent().build();
     }
+
+    //프로필 수정 파트
+    @GetMapping("/mypage-profile/{serialNumber}")
+    public ResponseEntity<UserDTO> getProfile(@PathVariable String serialNumber) {
+        UserDTO profileDTO = mypageService.getProfile(serialNumber);
+        return ResponseEntity.ok(profileDTO);
+    }
+
+    @PostMapping(value = "mypage-profile/{serialNumber}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<String> saveProfile(
+            @PathVariable String serialNumber,
+            @RequestPart("userDTO") UserDTO userDTO,
+            @RequestPart(value = "profileImageFile", required = false) MultipartFile profileImageFile) {
+        try {
+            mypageService.saveProfile(serialNumber, userDTO, profileImageFile);
+            return ResponseEntity.ok("Profile updated successfully");
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Failed to update profile: " + e.getMessage());
+        }
+    }
+
 }

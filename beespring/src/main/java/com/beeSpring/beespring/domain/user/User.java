@@ -1,12 +1,18 @@
 package com.beeSpring.beespring.domain.user;
 
+import com.beeSpring.beespring.domain.bid.Product;
+import com.beeSpring.beespring.domain.shipping.ShippingAddress;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * 로그인 기능
  * @AllArgsConstructor 를 쓰고 다른 데서 시간을 입력할지 직접 생성자를 만들고 localDate.now() 를 쓸지 생각해보자 
@@ -16,43 +22,85 @@ import java.time.LocalDateTime;
 @Data
 @Table(name="User")
 @Entity
+@Builder
 public class User {
     @Id
-    @Column(name = "serial_number", nullable = false)
+    @Column(name = "serial_number")
     private String serialNumber;
+
     @Column(name = "user_id")
     private String userId;
+
     @Column(name="role_id")
     private int roleId;
-    @Column(name="role")
-    private String role; // enum 이 아니라 string 으로 하는게 맞는지?
+
+    @Column(name = "password")
     private String password;
+
     @Column(name="first_name")
     private String firstName;
+
     @Column(name="last_name")
     private String lastName;
+
+    @Column(name = "nickname")
     private String nickname;
+
+    @Column(name = "email")
     private String email;
+
     @Column(name="mobile_number")
     private String mobileNumber;
+
     @Column(name="registration_date")
     private LocalDateTime registrationDate;
+
+    @Column(name = "birthdate")
     private LocalDate birthdate;
+
     @Column(name="reported_cnt")
     private int reportedCnt;
+
+    @Column(name = "state")
     @Enumerated(EnumType.STRING)
     private State state;
+
+    @Column(name = "reason")
     private String reason;
+
+    @Column(name = "suspended")
     private int suspended;
+
     @Column(name="mod_date")
     private LocalDateTime modDate;
+
     @Column(name="refresh_token")
     private String refreshToken;
+
     @Column(name="profile_image")
     private String profileImage;
+
+    @Column(name = "tag1")
     private String tag1;
+
+    @Column(name = "tag2")
     private String tag2;
+
+    @Column(name = "tag3")
     private String tag3;
+
+    @Column(name = "access_token")
+    private String accessToken;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<ShippingAddress> shippingAddresses;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserIdol> userIdols;
+
+    @OneToMany(mappedBy = "user")
+    private List<Product> products;
 
     @Override
     public String toString() {

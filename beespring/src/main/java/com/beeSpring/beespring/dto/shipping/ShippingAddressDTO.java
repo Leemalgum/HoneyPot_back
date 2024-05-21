@@ -1,6 +1,7 @@
 package com.beeSpring.beespring.dto.shipping;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,5 +17,5 @@ public class ShippingAddressDTO {
     private String recipientName;
     private String recipientPhone;
     private String roadAddress;
-    private Long serialNumber;
+    private String serialNumber;
 }
