@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.beeSpring.beespring.domain.shipping.DeliveryStatus;
 import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
+import com.beeSpring.beespring.dto.mypage.AddressDTO;
 import com.beeSpring.beespring.dto.mypage.PaymentProductDTO;
 import com.beeSpring.beespring.dto.mypage.ProductWithSerialNumberDTO;
 import com.beeSpring.beespring.dto.user.UserDTO;
@@ -23,7 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -53,13 +56,15 @@ public class MypageServiceImpl implements MypageService {
             ProductWithSerialNumberDTO productDTO = ProductWithSerialNumberDTO.builder()
                     .productId((String) objArray[0])
                     .paymentStatus((int) objArray[1])
-                    .deliveryStatus((DeliveryStatus) objArray[2])
-                    .serialNumber((String) objArray[3])
-                    .productName((String) objArray[4])
-                    .image1((String) objArray[5])
-                    .priceUnit((Integer) objArray[6])
-                    .startPrice((int) objArray[7])
-                    .bidCnt((int) objArray[8])
+                    .completeDate((LocalDateTime) objArray[2])
+                    .deliveryStatus((DeliveryStatus) objArray[3])
+                    .serialNumber((String) objArray[4])
+                    .productName((String) objArray[5])
+                    .image1((String) objArray[6])
+                    .priceUnit((Integer) objArray[7])
+                    .startPrice((int) objArray[8])
+                    .bidCnt((int) objArray[9])
+                    .nickName((String) objArray[10])
                     .build();
 
             products.add(productDTO);
@@ -99,29 +104,42 @@ public class MypageServiceImpl implements MypageService {
     }
 
     public PaymentProductDTO getProductById(String serialNumber, String productId) {
-//        Object product = productRepository.findByProductId(serialNumber, productId);
-//        Map<String, Object> productMap = (Map<String, Object>) product;
-//
-//        PaymentProductDTO productDTO = PaymentProductDTO.builder()
-//                .productId((String) productMap.get("productId"))
-//                .serialNumber((String) productMap.get("serialNumber"))
-//                .productName((String) productMap.get("productName"))
-//                .priceUnit((int) productMap.get("priceUnit"))
-//                .startPrice((int) productMap.get("startPrice"))
-//                .bidCnt((Integer) productMap.get("bidCnt"))
-//                .recipientName((String) productMap.get("recipientName"))
-//                .postCode((String) productMap.get("postCode"))
-//                .roadAddress((String) productMap.get("roadAddress"))
-//                .detailAddress((String) productMap.get("detailAddress"))
-//                .recipientPhone((String) productMap.get("recipientPhone"))
-//                .build();
+        List<Object[]> productData = productRepository.findByProductId(serialNumber, productId);
 
-        return null;
+        if (productData != null) {
+            try {
+                // AddressDTO 리스트 생성
+                List<AddressDTO> addresses = new ArrayList<>();
+                for (Object[] productDatum : productData) {
+                    logger.info("for");
+                    logger.info("{}", productDatum);
+                    addresses.add(
+                            new AddressDTO((Long) productDatum[6], (String) productDatum[7], (String) productDatum[8], (String) productDatum[9], (String) productDatum[10], (String) productDatum[11],(String) productDatum[12]));
+                }
+
+                return PaymentProductDTO.builder()
+                        .productId(productId)
+                        .serialNumber(serialNumber)
+                        .productName((String) productData.getFirst()[2])
+                        .priceUnit((Integer) productData.getFirst()[3])
+                        .startPrice((Integer) productData.getFirst()[4])
+                        .bidCnt((Integer) productData.getFirst()[5])
+                        .address(addresses)
+                        .build();
+            } catch (Exception e) {
+                logger.error("Error building productDTO", e);
+                return null;
+            }
+        } else {
+            logger.info("No product data found for serialNumber: {} and productId: {}", serialNumber, productId);
+            return null;
+        }
     }
 
+
     //프로필 파트
-        @Override
-        public UserDTO getProfile(String serialNumber) {
+    @Override
+    public UserDTO getProfile(String serialNumber) {
         User user = userRepository.findBySerialNumber(serialNumber)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return new UserDTO(
@@ -148,6 +166,7 @@ public class MypageServiceImpl implements MypageService {
                 user.getTag3()
         );
     }
+
     @Override
     @Transactional
     public void saveProfile(String serialNumber, UserDTO userDTO, MultipartFile profileImageFile) throws IOException {
