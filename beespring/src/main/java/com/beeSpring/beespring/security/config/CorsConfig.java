@@ -19,7 +19,8 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource(); // url 패턴을 기반으로 CORS 구성을 저장하는 객체
         CorsConfiguration config = new CorsConfiguration(); // CORS 정책을 정의하는 객체
         config.setAllowCredentials(true); // 자격 증명 (쿠키, 인증 헤더 등) 을 허용하도록 설정
-        config.addAllowedOriginPattern("*"); // 모든 도메인에서의 요청을 허용 (와일드카드 문법을 허용하는 메서드)
+        config.addAllowedOrigin("http://localhost:3000"); // 모든 도메인에서의 요청을 허용 (와일드카드 문법을 허용하는 메서드)
+        config.addAllowedOrigin("http://localhost:8080"); // 모든 도메인에서의 요청을 허용 (와일드카드 문법을 허용하는 메서드)
         // 꼭 !!!!! 배포 후에는 config.addAllowedOriginPatter("http://beespring.shop")로 바꿔야 한다. 안그러면 위에 true 설정 때문에 보안 엄청 취약해짐
         config.addAllowedHeader("*"); // 모든 헤더를 허용
         config.addAllowedMethod("*"); // 모든 HTTP 메서드 (GET, POST, PUT, DELETE 등)을 허용
