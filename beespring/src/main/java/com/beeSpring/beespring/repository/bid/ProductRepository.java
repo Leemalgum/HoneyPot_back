@@ -37,7 +37,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 //            "WHERE p.serialNumber = :serialNumber AND p.productId = :productId")
 
     @Query("SELECT p.productId, u.serialNumber, p.productName, p.priceUnit, p.startPrice, p.bidCnt, " +
-            "sa.recipientName, sa.postCode, sa.roadAddress, sa.detailAddress, sa.recipientPhone " +
+            "sa.addressId, sa.addressName, sa.recipientName, sa.recipientPhone, sa.postCode, sa.roadAddress, sa.detailAddress " +
             "FROM Product p JOIN p.user u JOIN u.shippingAddresses sa " +
             "WHERE u.serialNumber = :serialNumber AND p.productId = :productId")
     List<Object[]> findByProductId(@Param("serialNumber") String serialNumber, @Param("productId") String productId);
