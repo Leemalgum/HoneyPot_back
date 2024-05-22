@@ -92,6 +92,12 @@ public class User {
     @Column(name = "access_token")
     private String accessToken;
 
+    @Column(name = "access_token_expiration")
+    private LocalDateTime accessTokenExpiration;
+
+    @Column(name = "refresh_token_expiration")
+    private LocalDateTime refreshTokenExpiration;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<ShippingAddress> shippingAddresses;
