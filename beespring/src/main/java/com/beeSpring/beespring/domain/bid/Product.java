@@ -1,31 +1,39 @@
 package com.beeSpring.beespring.domain.bid;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.beeSpring.beespring.domain.category.Idol;
+import com.beeSpring.beespring.domain.category.ProductType;
+import com.beeSpring.beespring.domain.user.User;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Product")
 @Getter
-@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Product {
     @Id
-    @Column(name = "product_id")
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(name = "product_id", updatable = false, nullable = false)
     private String productId;
 
-    @Column(name = "idol_id")
-    private int idolId;
+    @ManyToOne
+    @JoinColumn(name = "idol_id", nullable = false)
+    private Idol idol;
 
-    @Column(name = "ptype_id")
-    private int ptypeId;
+    @ManyToOne
+    @JoinColumn(name = "ptype_id", nullable = false)
+    private ProductType productType;
 
-    @Column(name = "serial_number")
-    private String serialNumber;
+    @ManyToOne
+    @JoinColumn(name = "serial_number", nullable = false)
+    private User user;
 
     @Column(name = "product_name")
     private String productName;
@@ -58,7 +66,7 @@ public class Product {
     private Integer buyNow;
 
     @Column(name = "time_limit")
-    private LocalDateTime timeLimit;
+    private int timeLimit;
 
     @Column(name = "view")
     private Long view;
@@ -75,6 +83,11 @@ public class Product {
     @Column(name = "request_time")
     private LocalDateTime requestTime;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "storage_status")
-    private String storageStatus;
+    private StorageStatus storageStatus;
+
+    public Product() {
+
+    }
 }

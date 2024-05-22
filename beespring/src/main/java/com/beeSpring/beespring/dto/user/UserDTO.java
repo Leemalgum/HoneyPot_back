@@ -1,15 +1,12 @@
 package com.beeSpring.beespring.dto.user;
 
-import com.beeSpring.beespring.domain.user.Role;
+import com.beeSpring.beespring.domain.user.RoleType;
 import com.beeSpring.beespring.domain.user.State;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.Bean;
 
-import java.sql.Blob;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -21,7 +18,6 @@ public class UserDTO {
     private String serialNumber;
     private String userId;
     private int roleId;
-    private Role role;
     private String password;
     private String firstName;
     private String lastName;
@@ -36,10 +32,13 @@ public class UserDTO {
     private int suspended;
     private LocalDateTime modDate;
     private String refreshToken;
-    private Blob profileImage;
+    private String profileImage;
     private String tag1;
     private String tag2;
     private String tag3;
+
+//    public UserDTO(String profileImage, String nickname, String tag1, String tag2, String tag3, Object o) {
+//    }
 
     @Override
     public String toString() {
