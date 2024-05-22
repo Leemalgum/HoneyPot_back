@@ -66,9 +66,7 @@ public class MypageController {
             @RequestParam("productId") String productId) {
         try {
             PaymentProductDTO product = mypageService.getProductById(serialNumber, productId);
-            log.info("controller = {}", product);
             if (product != null) {
-                log.info("{}", product);
                 return ResponseEntity.ok(product);
             } else {
                 return ResponseEntity.notFound().build();

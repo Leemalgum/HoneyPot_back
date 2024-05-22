@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.beeSpring.beespring.domain.shipping.DeliveryStatus;
 import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
+import com.beeSpring.beespring.dto.mypage.AddressDTO;
 import com.beeSpring.beespring.dto.mypage.PaymentProductDTO;
 import com.beeSpring.beespring.dto.mypage.ProductWithSerialNumberDTO;
 import com.beeSpring.beespring.dto.user.UserDTO;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -102,35 +104,38 @@ public class MypageServiceImpl implements MypageService {
     }
 
     public PaymentProductDTO getProductById(String serialNumber, String productId) {
-        List<Object[]> productDataList = productRepository.findByProductId(serialNumber, productId);
-        Object[] productData = productDataList.get(0);
+        List<Object[]> productData = productRepository.findByProductId(serialNumber, productId);
 
         if (productData != null) {
             try {
-                PaymentProductDTO productDTO = PaymentProductDTO.builder()
+                // AddressDTO 리스트 생성
+                List<AddressDTO> addresses = new ArrayList<>();
+                for (Object[] productDatum : productData) {
+                    logger.info("for");
+                    logger.info("{}", productDatum);
+                    addresses.add(
+                            new AddressDTO((Long) productDatum[6], (String) productDatum[7], (String) productDatum[8], (String) productDatum[9], (String) productDatum[10], (String) productDatum[11],(String) productDatum[12]));
+                }
+
+                return PaymentProductDTO.builder()
                         .productId(productId)
                         .serialNumber(serialNumber)
-                        .productName((String) productData[2])
-                        .priceUnit((Integer) productData[3])
-                        .startPrice((Integer) productData[4])
-                        .bidCnt((Integer) productData[5])
-                        .recipientName((String) productData[6])
-                        .postCode((String) productData[7])
-                        .roadAddress((String) productData[8])
-                        .detailAddress((String) productData[9])
-                        .recipientPhone((String) productData[10])
+                        .productName((String) productData.getFirst()[2])
+                        .priceUnit((Integer) productData.getFirst()[3])
+                        .startPrice((Integer) productData.getFirst()[4])
+                        .bidCnt((Integer) productData.getFirst()[5])
+                        .address(addresses)
                         .build();
-                logger.info("service: {}", productDTO);
-                return productDTO;
             } catch (Exception e) {
                 logger.error("Error building productDTO", e);
                 return null;
             }
         } else {
-            logger.info("null");
+            logger.info("No product data found for serialNumber: {} and productId: {}", serialNumber, productId);
             return null;
         }
     }
+
 
     //프로필 파트
     @Override
