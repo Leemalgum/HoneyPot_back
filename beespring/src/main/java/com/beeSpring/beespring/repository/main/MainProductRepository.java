@@ -3,6 +3,8 @@ package com.beeSpring.beespring.repository.main;
 import com.beeSpring.beespring.domain.bid.Product;
 import com.beeSpring.beespring.domain.category.Idol;
 import com.beeSpring.beespring.dto.category.IdolDTO;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +23,8 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
 //            "FROM UserIdol ui " +
 //            "JOIN Idol i ON ui.idolId = i.idolId " +
 //            "where ui.serialNumber = ?1")
+
+
     @Query("SELECT i.idolId, i.idolName " +
             "FROM UserIdol ui " +
             "JOIN ui.idol i " +
@@ -43,9 +47,11 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
             "JOIN p.idol i " +
             "JOIN p.productType t " +
             "JOIN p.user u " +
-            "ORDER BY p.view DESC")
+            "WHERE i.idolName = :idolName " +
+            "AND p.storageStatus = 'PENDING' " +
+            "ORDER BY FUNCTION('RAND') DESC")
 //    List<Object[]> findByCategory(List<String> idolName);
-    List<Object[]> findByCategory(String idolName);
+    List<Object[]> findByCategory(@Param("idolName") String idolName, Pageable pageable);
 
 
     //    @Query("SELECT p, i.idolName,  t.ptypeName, u.userId " +
@@ -59,6 +65,7 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
             "JOIN p.idol i " +
             "JOIN p.productType t " +
             "JOIN p.user u " +
+            "WHERE p.storageStatus = 'PENDING' " +
             "ORDER BY p.view DESC " +
             "LIMIT 12")
     List<Object[]> findByView();
@@ -74,13 +81,14 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
             "JOIN p.idol i " +
             "JOIN p.productType t " +
             "JOIN p.user u " +
-            "ORDER BY p.timeLimit DESC " +
+            "WHERE p.storageStatus = 'PENDING' " +
+            "ORDER BY p.deadline DESC " +
             "LIMIT 12")
     List<Object[]> findByDeadLine();
 
 
     //    @Query("SELECT p, i.idolName, t.ptypeName, u.userId " +
-//            "            FROM Product p\n" +
+//            "            FROM Product p\n" +ORDER BY FUNCTION('DATE_ADD', p.registrationDate, INTERVAL p.timeLimit HOUR) DESC
 //            "            JOIN Idol i ON p.idolId = i.idolId\n" +
 //            "            JOIN ProductType t ON p.ptypeId  = t.ptypeId\n" +
 //            "            JOIN User u ON p.serialNumber  = u.serialNumber\n" +
@@ -90,7 +98,8 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
             "JOIN p.idol i " +
             "JOIN p.productType t " +
             "JOIN p.user u " +
-            "ORDER BY p.registrationDate ASC " +
+            "WHERE p.storageStatus = 'PENDING' " +
+            "ORDER BY p.registrationDate DESC " +
             "LIMIT 12")
     List<Object[]> findByLatest();
 

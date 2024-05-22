@@ -7,11 +7,16 @@ import com.beeSpring.beespring.dto.main.MainProductDTO;
 import com.beeSpring.beespring.repository.main.MainProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,8 +55,11 @@ public class MainServiceImpl implements MainService {
 
 //        List<String> idolName = productRepository.findIdolName();
 //        List<String> idolName = productRepository.findIdolName(String serialNumber);
-        List<Object[]> productList = mainProductRepository.findByCategory(idolName);
+        Pageable limit = PageRequest.of(0, 4);
+        List<Object[]> productList = mainProductRepository.findByCategory(idolName, limit);
         List<MainProductDTO> product = new ArrayList<>();
+
+
 
         for (Object[] objArray : productList) {
             Product products = (Product)objArray[0];
@@ -90,6 +98,7 @@ public class MainServiceImpl implements MainService {
 
             product.add(productDTO);
         }
+
         return product;
     }
 
@@ -191,6 +200,7 @@ public class MainServiceImpl implements MainService {
         List<Object[]> productList = mainProductRepository.findByDeadLine();
         List<MainProductDTO> product = new ArrayList<>();
 
+
         for (Object[] objArray : productList) {
             Product products = (Product)objArray[0];
             String idolName = (String) objArray[1];
@@ -229,5 +239,22 @@ public class MainServiceImpl implements MainService {
         }
         return product;
     }
+
+//    @Autowired
+//    public List<MainProductDTO> getActiveEntities() {
+//        List<Product> mainProductDTO = mainProductRepository.findAll();
+//        return mainProductDTO.stream()
+//                .map(entity -> {
+//                    LocalDateTime deadline = entity.getRegistrationDate().plusHours(entity.getTimeLimit());
+//                    return new MainProductDTO(entity.getProductId(), entity.getRegistrationDate(), entity.getTimeLimit(), deadline);
+//                })
+//                .collect(Collectors.toList());
+//    }
+// 1. 테이블에 데드라인 컬럼 추가하기
+// 2. RegistrationTime이 찍혀서 테이블에 저장되면 Timlimit이랑 합쳐서 데드라인 저장되는 트리거 작성
+// 3. 테이블에 저장된 데드라인 내림차순 정렬해서 (상태: 진행중) 화면에 출력
+
+//4. 마감시간 - 현재 시간 = 0 이면 경매결과 트리거 작동되도록
+
 
 }
