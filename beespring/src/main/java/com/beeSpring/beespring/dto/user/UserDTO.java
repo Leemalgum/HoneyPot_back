@@ -31,7 +31,10 @@ public class UserDTO {
     private String reason;
     private int suspended;
     private LocalDateTime modDate;
+    private String accessToken;
     private String refreshToken;
+    private LocalDateTime accessTokenExpiration;
+    private LocalDateTime refreshTokenExpiration;
     private String profileImage;
     private String tag1;
     private String tag2;
