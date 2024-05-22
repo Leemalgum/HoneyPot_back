@@ -77,6 +77,9 @@ public class Product {
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
+    @Column(name = "deadline")
+    private LocalDateTime deadline;
+
     @Column(name = "bid_cnt")
     private int bidCnt;
 
