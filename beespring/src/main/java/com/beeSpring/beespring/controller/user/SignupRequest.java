@@ -1,12 +1,13 @@
 package com.beeSpring.beespring.controller.user;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
 @Data
 public class SignupRequest {
-    private String profileImage;
+    private MultipartFile profileImage;
     private String provider;
     private String username; //userId
     private String roleId;
