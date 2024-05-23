@@ -77,7 +77,7 @@ public class MypageServiceImpl implements MypageService {
                 productDTO.setDeliveryStatus(DeliveryStatus.valueOf("NULL"));
             }
 
-            logger.info("product: {}", productDTO);
+//            logger.info("product: {}", productDTO);
             products.add(productDTO);
         }
 
@@ -161,6 +161,49 @@ public class MypageServiceImpl implements MypageService {
 
         // 변경된 상태를 저장
         productRepository.save(product);
+    }
+
+    @Override
+    public List<ProductWithSerialNumberDTO> getPurchaseListBySerialNumber(String serialNumber) {
+        List<Object[]> productList = productRepository.findByCustomerId(serialNumber);
+        List<ProductWithSerialNumberDTO> products = new ArrayList<>();
+
+        logger.info("Retrieved product list:");
+        for (Object[] objArray : productList) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Object obj : objArray) {
+                stringBuilder.append(obj).append(", ");
+            }
+            logger.info(stringBuilder.toString());
+        }
+        for (Object[] objArray : productList) {
+            ProductWithSerialNumberDTO productDTO = ProductWithSerialNumberDTO.builder()
+                    .productId((String) objArray[0])
+                    .paymentStatus((Integer) objArray[1])
+                    .completeDate((LocalDateTime) objArray[2])
+                    .deliveryStatus((DeliveryStatus) objArray[3])
+                    .serialNumber((String) objArray[4])
+                    .productName((String) objArray[5])
+                    .image1((String) objArray[6])
+                    .priceUnit((Integer) objArray[7])
+                    .startPrice((Integer) objArray[8])
+                    .bidCnt((Integer) objArray[9])
+                    .nickName((String) objArray[10])
+                    .build();
+
+//            if (objArray[3] != null) {
+//                // 배송 상태가 null이 아닌 경우에만 toString() 호출하여 문자열로 변환
+//                productDTO.setDeliveryStatus(((DeliveryStatus) objArray[3]));
+//            } else {
+//                productDTO.setDeliveryStatus(DeliveryStatus.valueOf("NULL"));
+//            }
+
+            logger.info("product: {}", productDTO);
+            products.add(productDTO);
+        }
+
+        return products;
+
     }
 
 
