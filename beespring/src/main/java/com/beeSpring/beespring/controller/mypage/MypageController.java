@@ -34,14 +34,14 @@ public class MypageController {
 
 
     /**
-     * mypage->구매목록
-     * serialNumber로 구매 상품을 조회하는 메서드
+     * mypage->판매목록
+     * serialNumber로 판매 상품을 조회하는 메서드
      *
      * @param serialNumber
      * @return
      */
-    @GetMapping(path = "/productList/{serialNumber}")
-    public ResponseEntity<List<ProductWithSerialNumberDTO>> getProductList(@PathVariable("serialNumber") String serialNumber) {
+    @GetMapping(path = "/salesList/{serialNumber}")
+    public ResponseEntity<List<ProductWithSerialNumberDTO>> getSalesList(@PathVariable("serialNumber") String serialNumber) {
         // serialNumber를 이용하여 ProductService를 통해 해당 serialNumber에 해당하는 상품 목록을 가져옵니다.
         List<ProductWithSerialNumberDTO> productList = mypageService.getProductListBySerialNumber(serialNumber);
         if (!productList.isEmpty()) {
@@ -49,6 +49,22 @@ public class MypageController {
             return new ResponseEntity<>(productList, HttpStatus.OK);
         } else {
             // 상품 목록이 존재하지 않을 경우 404 Not Found 응답을 반환합니다.
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
+     * mypage->구매 목록
+     * @param serialNumber
+     * @return
+     */
+    @GetMapping(path = "/purchaseList/{serialNumber}")
+    public ResponseEntity<List<ProductWithSerialNumberDTO>> getPurchaseList(@PathVariable("serialNumber") String serialNumber) {
+        // serialNumber를 이용하여 ProductService를 통해 해당 serialNumber에 해당하는 상품 목록을 가져옵니다.
+        List<ProductWithSerialNumberDTO> productList = mypageService.getPurchaseListBySerialNumber(serialNumber);
+        if (!productList.isEmpty()) {
+            return new ResponseEntity<>(productList, HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -73,6 +89,21 @@ public class MypageController {
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("제품 정보 조회 중 오류가 발생했습니다.");
+        }
+    }
+
+    /**
+     * 마이페이지->판매목록 : 검수 완료 된 상품을 판매 시작
+     * @param productId
+     * @return
+     */
+    @PutMapping("/product/{productId}/start-sale")
+    public ResponseEntity<String> startSale(@PathVariable String productId) {
+        try {
+            mypageService.startSale(productId);
+            return ResponseEntity.ok("Sale started successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to start sale: " + e.getMessage());
         }
     }
 
