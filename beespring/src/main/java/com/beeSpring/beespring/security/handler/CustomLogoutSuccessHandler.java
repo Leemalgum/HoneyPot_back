@@ -1,3 +1,4 @@
+/*
 package com.beeSpring.beespring.security.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,3 +29,4 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
         response.sendRedirect("/login?logout");
     }
 }
+*/

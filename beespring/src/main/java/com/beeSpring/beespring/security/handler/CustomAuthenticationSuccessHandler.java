@@ -28,7 +28,7 @@ import com.beeSpring.beespring.service.jwt.TokenService;
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     private AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
-    private final TokenService tokenService;
+//    private final TokenService tokenService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -50,7 +50,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         LocalDateTime accessTokenExpiration = LocalDateTime.now().plusMinutes(10);
         LocalDateTime refreshTokenExpiration = LocalDateTime.now().plusDays(30);
 
-        tokenService.saveToken(user.getSerialNumber(), accessToken, refreshToken, accessTokenExpiration, refreshTokenExpiration);
+//        tokenService.saveToken(user.getSerialNumber(), accessToken, refreshToken, accessTokenExpiration, refreshTokenExpiration);
 
         response.sendRedirect("/index"); // Redirect to the homepage or other success page
     }
