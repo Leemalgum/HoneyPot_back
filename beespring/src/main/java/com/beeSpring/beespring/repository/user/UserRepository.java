@@ -29,5 +29,5 @@ public interface UserRepository extends JpaRepository<User, String> {
      * */
     boolean existsBySerialNumber(String serialNumber);
 
-//    void save(User user);
+    Optional<User> findBySerialNumber(String serialNumber);
 }
