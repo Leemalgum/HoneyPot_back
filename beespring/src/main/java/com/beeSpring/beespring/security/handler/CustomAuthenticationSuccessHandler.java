@@ -21,7 +21,7 @@ import java.util.Date;
 
 import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.repository.user.UserRepository;
-import com.beeSpring.beespring.service.jwt.TokenService;
+//import com.beeSpring.beespring.service.jwt.TokenService;
 
 @Component
 @RequiredArgsConstructor
