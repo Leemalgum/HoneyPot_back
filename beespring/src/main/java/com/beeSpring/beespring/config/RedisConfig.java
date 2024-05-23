@@ -1,3 +1,4 @@
+/*
 package com.beeSpring.beespring.config;
 
 import com.beeSpring.beespring.dto.user.UserTokens;
@@ -23,3 +24,4 @@ public class RedisConfig {
     }
 }
 
+*/
