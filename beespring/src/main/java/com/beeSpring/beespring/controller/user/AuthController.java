@@ -291,6 +291,32 @@ public class AuthController {
         }
     }
 
+    @Transactional
+    @PostMapping("/change-password")
+    public ResponseEntity<CustomApiResponse<String>> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        try {
+            Optional<User> userOptional = userRepository.findBySerialNumber(changePasswordRequest.getSerialNumber());
+            if (userOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CustomApiResponse.error("User not found", 404));
+            }
+            User user = userOptional.get();
+
+            // 현재 비밀번호 검증
+            if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), user.getPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CustomApiResponse.error("Invalid current password", 401));
+            }
+
+            // 새로운 비밀번호 설정
+            user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+            userRepository.save(user);
+
+            return ResponseEntity.ok(CustomApiResponse.success("Password changed successfully", "Password changed successfully"));
+        } catch (Exception e) {
+            log.error("Error changing password", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CustomApiResponse.error("Password change failed: " + e.getMessage(), 500));
+        }
+    }
+
     public String storeProfileImage(MultipartFile file) throws IOException {
         String objectName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
         ObjectMetadata metadata = new ObjectMetadata();
