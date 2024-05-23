@@ -6,6 +6,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.beeSpring.beespring.domain.bid.Product;
+import com.beeSpring.beespring.domain.bid.StorageStatus;
 import com.beeSpring.beespring.domain.shipping.DeliveryStatus;
 import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
@@ -55,18 +57,27 @@ public class MypageServiceImpl implements MypageService {
         for (Object[] objArray : productList) {
             ProductWithSerialNumberDTO productDTO = ProductWithSerialNumberDTO.builder()
                     .productId((String) objArray[0])
-                    .paymentStatus((int) objArray[1])
+                    .paymentStatus((Integer) objArray[1])
                     .completeDate((LocalDateTime) objArray[2])
                     .deliveryStatus((DeliveryStatus) objArray[3])
                     .serialNumber((String) objArray[4])
                     .productName((String) objArray[5])
                     .image1((String) objArray[6])
                     .priceUnit((Integer) objArray[7])
-                    .startPrice((int) objArray[8])
-                    .bidCnt((int) objArray[9])
+                    .startPrice((Integer) objArray[8])
+                    .bidCnt((Integer) objArray[9])
                     .nickName((String) objArray[10])
+                    .storageStatus((StorageStatus) objArray[11])
                     .build();
 
+            if (objArray[3] != null) {
+                // 배송 상태가 null이 아닌 경우에만 toString() 호출하여 문자열로 변환
+                productDTO.setDeliveryStatus(((DeliveryStatus) objArray[3]));
+            } else {
+                productDTO.setDeliveryStatus(DeliveryStatus.valueOf("NULL"));
+            }
+
+            logger.info("product: {}", productDTO);
             products.add(productDTO);
         }
 
@@ -103,6 +114,7 @@ public class MypageServiceImpl implements MypageService {
         productRepository.save(productDTO.toEntity());
     }
 
+    @Override
     public PaymentProductDTO getProductById(String serialNumber, String productId) {
         List<Object[]> productData = productRepository.findByProductId(serialNumber, productId);
 
@@ -114,7 +126,7 @@ public class MypageServiceImpl implements MypageService {
                     logger.info("for");
                     logger.info("{}", productDatum);
                     addresses.add(
-                            new AddressDTO((Long) productDatum[6], (String) productDatum[7], (String) productDatum[8], (String) productDatum[9], (String) productDatum[10], (String) productDatum[11],(String) productDatum[12]));
+                            new AddressDTO((Long) productDatum[6], (String) productDatum[7], (String) productDatum[8], (String) productDatum[9], (String) productDatum[10], (String) productDatum[11], (String) productDatum[12]));
                 }
 
                 return PaymentProductDTO.builder()
@@ -134,6 +146,21 @@ public class MypageServiceImpl implements MypageService {
             logger.info("No product data found for serialNumber: {} and productId: {}", serialNumber, productId);
             return null;
         }
+    }
+
+    @Transactional
+    @Override
+    public void startSale(String productId) {
+        logger.info("startsale method called");
+        // 제품 조회
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
+
+        // 판매 상태 변경
+        product.updateStorageStatus(StorageStatus.valueOf("SELLING"));
+
+        // 변경된 상태를 저장
+        productRepository.save(product);
     }
 
 

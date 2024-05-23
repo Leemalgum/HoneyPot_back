@@ -76,6 +76,21 @@ public class MypageController {
         }
     }
 
+    /**
+     * 마이페이지->판매목록 : 검수 완료 된 상품을 판매 시작
+     * @param productId
+     * @return
+     */
+    @PutMapping("/product/{productId}/start-sale")
+    public ResponseEntity<String> startSale(@PathVariable String productId) {
+        try {
+            mypageService.startSale(productId);
+            return ResponseEntity.ok("Sale started successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to start sale: " + e.getMessage());
+        }
+    }
+
 
     //입고요청
     @PostMapping(value = "/mypage-stock", consumes = "multipart/form-data")

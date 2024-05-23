@@ -27,4 +27,5 @@ public interface MypageService {
 
     PaymentProductDTO getProductById(String serialNumber, String productId);
 
+    void startSale(String productId);
 }
