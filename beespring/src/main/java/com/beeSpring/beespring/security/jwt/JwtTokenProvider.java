@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Map;
+import java.util.HashMap;
 
 import java.security.Key;
 import java.util.Date;
@@ -41,13 +43,13 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    public String createAccessToken(String username) {
-        Claims claims = Jwts.claims().setSubject(username).build();
+    public String createAccessToken(String username, String provider) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setClaims(claims)
+                .setSubject(username)
+                .setIssuer(provider)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -74,13 +76,22 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    public String getUsername(String token) {
-        return Jwts.parser()
+    public String getProvider(String token) {
+        Claims claims = Jwts.parser()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
+        return claims.getIssuer();
+    }
+
+    public String getUsername(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
     }
 
     // 토큰에서 만료 날짜를 추출하여 LocalDateTime으로 반환
