@@ -1,16 +1,30 @@
 package com.beeSpring.beespring.controller.user;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.beeSpring.beespring.domain.shipping.ShippingAddress;
 import com.beeSpring.beespring.domain.user.User;
+import com.beeSpring.beespring.dto.shipping.ShippingAddressDTO;
 import com.beeSpring.beespring.repository.user.UserRepository;
 import com.beeSpring.beespring.response.CustomApiResponse;
 import com.beeSpring.beespring.response.ResponseCode;
 import com.beeSpring.beespring.security.jwt.JwtTokenProvider;
+import com.beeSpring.beespring.service.mypage.MypageServiceImpl;
+import com.beeSpring.beespring.service.shipping.ShippingService;
+import com.beeSpring.beespring.service.user.UserIdolService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,14 +33,18 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -34,10 +52,14 @@ import java.util.Optional;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
+    private static final Logger logger = LoggerFactory.getLogger(MypageServiceImpl.class);
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final AmazonS3 s3Client;
+    private final UserIdolService userIdolService;
+    private final ShippingService shippingService;
 
     @Transactional
     @PostMapping("/login")
@@ -115,38 +137,67 @@ public class AuthController {
     }
 
     @Transactional
-    @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody SignupRequest signupRequest) {
-        System.out.println("signup에 오긴 하니?");
+    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> signup(
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+            @RequestParam("username") String username,
+            @RequestParam("password") String password,
+            @RequestParam("name") String name,
+            @RequestParam("nickname") String nickname,
+            @RequestParam("mobileNumber") String mobileNumber,
+            @RequestParam("email") String email,
+            @RequestParam("postcode") String postcode,
+            @RequestParam("roadAddress") String roadAddress,
+            @RequestParam("detailAddress") String detailAddress,
+            @RequestParam("birthdate") String birthdate,
+            @RequestParam("selectedGender") String selectedGender) {
+
         log.debug("Entering signup method");
         try {
-            log.debug("Checking if user ID exists: {}", signupRequest.getUsername());
-            if (userRepository.existsByUserId(signupRequest.getUsername())) {
-                log.warn("User ID already exists: {}", signupRequest.getUsername());
+            log.debug("Checking if user ID exists: {}", username);
+            if (userRepository.existsByUserId(username)) {
+                log.warn("User ID already exists: {}", username);
                 return ResponseEntity.badRequest().body("User ID already exists");
             }
-            log.debug("Creating new user: {}", signupRequest.getUsername());
+            log.debug("Creating new user: {}", username);
             User user = new User();
-            user.setProfileImage(signupRequest.getProfileImage());
+            if (profileImage != null && !profileImage.isEmpty()) {
+                String profileImageUrl = storeProfileImage(profileImage);
+                user.setProfileImage(profileImageUrl);
+            }
             user.setProvider("service");
-            user.setSerialNumber(generateUniqueSerialNumber());
-            user.setUserId(signupRequest.getUsername());
+            String serialNumber = generateUniqueSerialNumber();
+            user.setSerialNumber(serialNumber);
+            user.setUserId(username);
             user.setRoleId(1);
-            user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-            user.setFirstName(signupRequest.getUsername());
-            user.setNickname(signupRequest.getNickname());
-            user.setMobileNumber(signupRequest.getMobileNumber());
-            user.setEmail(signupRequest.getEmail());
+            user.setPassword(passwordEncoder.encode(password));
+            user.setFirstName(name);
+            user.setNickname(nickname);
+            user.setMobileNumber(mobileNumber);
+            user.setEmail(email);
             user.setRegistrationDate(LocalDateTime.now());
-            user.setPostcode(signupRequest.getPostcode());
-            user.setRoadAddress(signupRequest.getRoadAddress());
-            user.setDetailAddress(signupRequest.getDetailAddress());
-            user.setBirthdate(signupRequest.getBirthdate());
-            user.setGender(signupRequest.getSelectedGender());
+            if (birthdate != null && !birthdate.isEmpty()) {
+                user.setBirthdate(LocalDate.parse(birthdate));
+            } else {
+                user.setBirthdate(LocalDate.of(0, 12, 25)); // 기본값 설정
+            }
+            user.setGender(selectedGender);
             log.debug("Saving user to repository");
             userRepository.save(user);
-            log.debug("User registered successfully: {}", signupRequest.getUsername());
-            return ResponseEntity.ok("User registered successfully");
+
+            ShippingAddressDTO shippingAddressDTO = new ShippingAddressDTO();
+            shippingAddressDTO.setSerialNumber(serialNumber);
+            shippingAddressDTO.setAddressName("기본 배송지");
+            shippingAddressDTO.setRecipientName(name);
+            shippingAddressDTO.setPostCode(postcode);
+            shippingAddressDTO.setRoadAddress(roadAddress);
+            shippingAddressDTO.setDetailAddress(detailAddress);
+            shippingAddressDTO.setRecipientPhone(mobileNumber);
+            shippingService.saveAddress(shippingAddressDTO);
+
+            log.debug("User registered successfully: {}", username);
+
+            return ResponseEntity.ok(serialNumber);
         } catch (Exception e) {
             log.error("Signup error", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Signup failed: " + e.getMessage());
@@ -193,5 +244,72 @@ public class AuthController {
         response.put("accessTokenExpiration", newAccessTokenExpiration.toString());
 
         return ResponseEntity.ok(CustomApiResponse.success(response, "Access token refreshed successfully"));
+    }
+
+    @GetMapping("/user-info")
+    public ResponseEntity<CustomApiResponse<HashMap<String, String>>> getUserInfo(HttpServletRequest request) {
+        String accessToken = request.getHeader("Authorization");
+        if (accessToken != null && accessToken.startsWith("Bearer ")) {
+            accessToken = accessToken.substring(7);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CustomApiResponse.error("Invalid access token", 401));
+        }
+
+        if (!jwtTokenProvider.validateToken(accessToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CustomApiResponse.error("Invalid access token", 401));
+        }
+
+        String username = jwtTokenProvider.getUsername(accessToken);
+        Optional<User> userOptional = userRepository.findByProviderAndUserId("service", username);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CustomApiResponse.error("User not found", 404));
+        }
+
+        User user = userOptional.get();
+        HashMap<String, String> response = new HashMap<>();
+        response.put("username", user.getUserId());
+        response.put("serialNumber", user.getSerialNumber());
+
+        return ResponseEntity.ok(CustomApiResponse.success(response, "User info fetched successfully"));
+    }
+
+    @PostMapping("/user-idol")
+    public ResponseEntity<?> saveUserIdols(@RequestBody Map<String, Object> request) {
+        String serialNumber = (String) request.get("serialNumber");
+        List<Integer> idolIds = (List<Integer>) request.get("idolIds");
+
+        if (serialNumber == null || idolIds == null || idolIds.isEmpty()) {
+            return ResponseEntity.badRequest().body("Invalid request data");
+        }
+
+        try {
+            userIdolService.saveUserIdols(serialNumber, idolIds);
+            return ResponseEntity.ok("Idols selected successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error saving idol selection");
+        }
+    }
+
+    public String storeProfileImage(MultipartFile file) throws IOException {
+        String objectName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(file.getContentType());
+        metadata.setContentLength(file.getSize());
+
+        try {
+
+            PutObjectRequest putRequest = new PutObjectRequest("beespring-bucket/profile", objectName, file.getInputStream(), metadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead);
+            s3Client.putObject(putRequest);
+            logger.info("File uploaded successfully to S3. URL: {}", s3Client.getUrl("beespring-bucket", objectName).toString());
+            return s3Client.getUrl("beespring-bucket/profile", objectName).toString();
+        } catch (AmazonServiceException e) {
+            logger.error("Failed to upload file to S3. AWS error message: {}", e.getErrorMessage());
+            throw new IOException("Failed to upload file to S3.", e);
+        } catch (SdkClientException e) {
+            logger.error("Failed to upload file to S3. SDK error message: {}", e.getMessage());
+            throw new IOException("Failed to upload file to S3.", e);
+        }
     }
 }
