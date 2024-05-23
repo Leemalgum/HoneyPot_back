@@ -1,6 +1,7 @@
 package com.beeSpring.beespring.service.bid;
 
 import com.beeSpring.beespring.domain.bid.Product;
+import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.bid.ProductWithIdolNameDTO;
 import com.beeSpring.beespring.dto.main.MainProductDTO;
 import com.beeSpring.beespring.repository.bid.ProductRepository;
@@ -17,6 +18,7 @@ public class BidServiceImpl implements BidService{
 
     private final ProductRepository productRepository;
     private final MainProductRepository mainProductRepository;
+
     public List<ProductWithIdolNameDTO> getAllProductsWithIdolName(){
         List<Object[]> productList = productRepository.findAllWithIdolName();
         List<ProductWithIdolNameDTO> products = new ArrayList<>();
@@ -74,7 +76,7 @@ public class BidServiceImpl implements BidService{
                 .price(product.getPrice())
                 .priceUnit(product.getPriceUnit())
                 .buyNow(product.getBuyNow())
-                //.timeLimit(product.getTimeLimit())
+                .timeLimit(product.getTimeLimit())
                 .view(product.getView())
                 .startPrice(product.getStartPrice())
                 .registrationDate(product.getRegistrationDate())
@@ -84,6 +86,36 @@ public class BidServiceImpl implements BidService{
                 .build();
 
         return productDTO;
+    }
+    @Override
+    public Product getProductEntityById(String productId) {
+        Product product = productRepository.findById(productId).stream().findFirst().get();
+
+        ProductDTO productDTO = ProductDTO.builder()
+                .productId(product.getProductId())
+                .idolId(product.getIdol().getIdolId())
+                .ptypeId(product.getProductType().getPtypeId())
+                .serialNumber(product.getProductId())
+                .productName(product.getProductName())
+                .image1(product.getImage1())
+                .image2(product.getImage2())
+                .image3(product.getImage3())
+                .image4(product.getImage4())
+                .image5(product.getImage5())
+                .productInfo(product.getProductInfo())
+                .price(product.getPrice())
+                .priceUnit(product.getPriceUnit())
+                .buyNow(product.getBuyNow())
+                .timeLimit(product.getTimeLimit())
+                .view(product.getView())
+                .startPrice(product.getStartPrice())
+                .registrationDate(product.getRegistrationDate())
+                .bidCnt(product.getBidCnt())
+                .requestTime(product.getRequestTime())
+                .storageStatus(String.valueOf(product.getStorageStatus()))
+                .build();
+
+        return productDTO.toEntity();
     }
 
     @Override

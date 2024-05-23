@@ -1,7 +1,9 @@
 package com.beeSpring.beespring.repository.bid;
 
 import com.beeSpring.beespring.domain.bid.Product;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -44,5 +46,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             "WHERE u.serialNumber = :serialNumber AND p.productId = :productId")
     List<Object[]> findByProductId(@Param("serialNumber") String serialNumber, @Param("productId") String productId);
 
+    @Transactional
+    @Modifying
+    @Query("UPDATE Product p SET p.price = :price WHERE p.productId = :productId")
+    void updateProductPrice(String productId, int price);
 
 }

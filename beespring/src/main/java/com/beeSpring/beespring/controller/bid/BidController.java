@@ -1,16 +1,18 @@
 package com.beeSpring.beespring.controller.bid;
 
+import com.beeSpring.beespring.domain.bid.Bid;
+import com.beeSpring.beespring.domain.bid.Product;
+import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.bid.ProductWithIdolNameDTO;
 import com.beeSpring.beespring.dto.main.MainProductDTO;
+import com.beeSpring.beespring.service.bid.BidLogService;
 import com.beeSpring.beespring.service.bid.BidService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,6 +21,8 @@ import java.util.List;
 public class BidController {
 
     private final BidService bidService;
+    private final BidLogService bidLogService;
+
 
     /**
      * '모두보기' 클릭시 보여주는 상품 전체 리스트
@@ -47,5 +51,34 @@ public class BidController {
         }
     }
 
+    @PostMapping(path = "/bids/place")
+    public ResponseEntity<Bid> placeBid(@RequestParam String productId, @RequestParam String serialNumber, @RequestParam int bidAmount) {
+        try {
+            System.out.println("Received bid data - productId: " + productId + ", serialNumber: " + serialNumber + ", bidAmount: " + bidAmount);
+
+            // Product 객체를 가져옴
+            Product product = bidService.getProductEntityById(productId);
+            if (product == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            // User 객체를 시리얼 넘버로 생성
+            User user = new User();
+            user.setSerialNumber(serialNumber);
+
+            // 입찰 수행
+            Bid bid = bidLogService.placeBid(product, user, bidAmount);
+            System.out.println("Bid placed successfully for product: " + productId + ", by user: " + serialNumber);
+
+
+            return new ResponseEntity<>(bid, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Bid placement failed due to illegal argument: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            System.out.println("Bid placement failed due to unexpected error: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
