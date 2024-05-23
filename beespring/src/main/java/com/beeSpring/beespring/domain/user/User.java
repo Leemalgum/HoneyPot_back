@@ -31,6 +31,9 @@ public class User {
     @Column(name = "user_id")
     private String userId;
 
+    @Column(name = "provider")
+    private String provider;
+
     @Column(name="role_id")
     private int roleId;
 
@@ -74,8 +77,17 @@ public class User {
     @Column(name="mod_date")
     private LocalDateTime modDate;
 
+    @Column(name = "access_token")
+    private String accessToken;
+
     @Column(name="refresh_token")
     private String refreshToken;
+
+    @Column(name = "access_token_expiration")
+    private LocalDateTime accessTokenExpiration;
+
+    @Column(name = "refresh_token_expiration")
+    private LocalDateTime refreshTokenExpiration;
 
     @Column(name="profile_image")
     private String profileImage;
@@ -89,14 +101,8 @@ public class User {
     @Column(name = "tag3")
     private String tag3;
 
-    @Column(name = "access_token")
-    private String accessToken;
-
-    @Column(name = "access_token_expiration")
-    private LocalDateTime accessTokenExpiration;
-
-    @Column(name = "refresh_token_expiration")
-    private LocalDateTime refreshTokenExpiration;
+    @Column(name = "gender")
+    private String gender;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
