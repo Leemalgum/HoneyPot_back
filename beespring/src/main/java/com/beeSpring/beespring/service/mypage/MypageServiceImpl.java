@@ -145,6 +145,7 @@ public class MypageServiceImpl implements MypageService {
         return new UserDTO(
                 user.getSerialNumber(),
                 user.getUserId(),
+                user.getProvider(),
                 user.getRoleId(),
                 user.getPassword(),
                 user.getFirstName(),
@@ -159,11 +160,15 @@ public class MypageServiceImpl implements MypageService {
                 user.getReason(),
                 user.getSuspended(),
                 user.getModDate(),
+                user.getAccessToken(),
                 user.getRefreshToken(),
+                user.getAccessTokenExpiration(),
+                user.getRefreshTokenExpiration(),
                 user.getProfileImage(),
                 user.getTag1(),
                 user.getTag2(),
-                user.getTag3()
+                user.getTag3(),
+                user.getGender()
         );
     }
 
