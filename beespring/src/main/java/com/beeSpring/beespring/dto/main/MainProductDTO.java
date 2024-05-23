@@ -50,4 +50,6 @@ public class MainProductDTO {
 
     public MainProductDTO() {}
 
+//    public MainProductDTO(String productId, LocalDateTime registrationDate, int timeLimit, LocalDateTime deadline) {
+//    }
 }

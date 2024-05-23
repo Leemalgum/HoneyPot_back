@@ -3,6 +3,8 @@ package com.beeSpring.beespring.repository.main;
 import com.beeSpring.beespring.domain.bid.Product;
 import com.beeSpring.beespring.domain.category.Idol;
 import com.beeSpring.beespring.dto.category.IdolDTO;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +23,8 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
 //            "FROM UserIdol ui " +
 //            "JOIN Idol i ON ui.idolId = i.idolId " +
 //            "where ui.serialNumber = ?1")
+
+
     @Query("SELECT i.idolId, i.idolName " +
             "FROM UserIdol ui " +
             "JOIN ui.idol i " +
@@ -43,55 +47,60 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
             "JOIN p.idol i " +
             "JOIN p.productType t " +
             "JOIN p.user u " +
-            "ORDER BY p.view DESC")
+            "WHERE i.idolName = :idolName " +
+            "AND p.storageStatus = 'PENDING' " +
+            "ORDER BY FUNCTION('RAND') DESC")
 //    List<Object[]> findByCategory(List<String> idolName);
-    List<Object[]> findByCategory(String idolName);
+    List<Object[]> findByCategory(@Param("idolName") String idolName, Pageable pageable);
 
 
-//    @Query("SELECT p, i.idolName,  t.ptypeName, u.userId " +
+    //    @Query("SELECT p, i.idolName,  t.ptypeName, u.userId " +
 //            "            FROM Product p\n" +
 //            "            JOIN Idol i ON p.idolId = i.idolId\n" +
 //            "            JOIN ProductType t ON p.ptypeId  = t.ptypeId\n" +
 //            "            JOIN User u ON p.serialNumber  = u.serialNumber\n" +
 //            "            ORDER BY p.view DESC limit 12")
-@Query("SELECT p, i.idolName, t.ptypeName, u.userId " +
-        "FROM Product p " +
-        "JOIN p.idol i " +
-        "JOIN p.productType t " +
-        "JOIN p.user u " +
-        "ORDER BY p.view DESC " +
-        "LIMIT 12")
+    @Query("SELECT p, i.idolName, t.ptypeName, u.userId " +
+            "FROM Product p " +
+            "JOIN p.idol i " +
+            "JOIN p.productType t " +
+            "JOIN p.user u " +
+            "WHERE p.storageStatus = 'PENDING' " +
+            "ORDER BY p.view DESC " +
+            "LIMIT 12")
     List<Object[]> findByView();
 
-//    @Query("SELECT p, i.idolName,  t.ptypeName, u.userId " +
+    //    @Query("SELECT p, i.idolName,  t.ptypeName, u.userId " +
 //            "            FROM Product p\n" +
 //            "            JOIN Idol i ON p.idolId = i.idolId\n" +
 //            "            JOIN ProductType t ON p.ptypeId  = t.ptypeId\n" +
 //            "            JOIN User u ON p.serialNumber  = u.serialNumber\n" +
 //            "            ORDER BY p.timeLimit DESC limit 12")
-@Query("SELECT p, i.idolName, t.ptypeName, u.userId " +
-        "FROM Product p " +
-        "JOIN p.idol i " +
-        "JOIN p.productType t " +
-        "JOIN p.user u " +
-        "ORDER BY p.timeLimit DESC " +
-        "LIMIT 12")
+    @Query("SELECT p, i.idolName, t.ptypeName, u.userId " +
+            "FROM Product p " +
+            "JOIN p.idol i " +
+            "JOIN p.productType t " +
+            "JOIN p.user u " +
+            "WHERE p.storageStatus = 'PENDING' " +
+            "ORDER BY p.deadline DESC " +
+            "LIMIT 12")
     List<Object[]> findByDeadLine();
 
 
-//    @Query("SELECT p, i.idolName, t.ptypeName, u.userId " +
-//            "            FROM Product p\n" +
+    //    @Query("SELECT p, i.idolName, t.ptypeName, u.userId " +
+//            "            FROM Product p\n" +ORDER BY FUNCTION('DATE_ADD', p.registrationDate, INTERVAL p.timeLimit HOUR) DESC
 //            "            JOIN Idol i ON p.idolId = i.idolId\n" +
 //            "            JOIN ProductType t ON p.ptypeId  = t.ptypeId\n" +
 //            "            JOIN User u ON p.serialNumber  = u.serialNumber\n" +
 //            "            ORDER BY p.registrationDate ASC limit 12")
-@Query("SELECT p, i.idolName, t.ptypeName, u.userId " +
-        "FROM Product p " +
-        "JOIN p.idol i " +
-        "JOIN p.productType t " +
-        "JOIN p.user u " +
-        "ORDER BY p.registrationDate ASC " +
-        "LIMIT 12")
+    @Query("SELECT p, i.idolName, t.ptypeName, u.userId " +
+            "FROM Product p " +
+            "JOIN p.idol i " +
+            "JOIN p.productType t " +
+            "JOIN p.user u " +
+            "WHERE p.storageStatus = 'PENDING' " +
+            "ORDER BY p.registrationDate DESC " +
+            "LIMIT 12")
     List<Object[]> findByLatest();
 
 

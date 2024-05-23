@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface ShippingAddressRepository extends JpaRepository<ShippingAddress, Long> {
-    @Query("SELECT sa FROM ShippingAddress sa WHERE sa.user.serialNumber = :serialNumber")
+    @Query("SELECT sa FROM ShippingAddress sa JOIN sa.user u WHERE u.serialNumber = :serialNumber")
     List<ShippingAddress> findBySerialNumber(@Param("serialNumber") String serialNumber);
 
 

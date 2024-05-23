@@ -33,7 +33,14 @@ public class MypageController {
     private final ShippingService shippingService;
 
 
-    @GetMapping(path = "/products/{serialNumber}")
+    /**
+     * mypage->구매목록
+     * serialNumber로 구매 상품을 조회하는 메서드
+     *
+     * @param serialNumber
+     * @return
+     */
+    @GetMapping(path = "/productList/{serialNumber}")
     public ResponseEntity<List<ProductWithSerialNumberDTO>> getProductList(@PathVariable("serialNumber") String serialNumber) {
         // serialNumber를 이용하여 ProductService를 통해 해당 serialNumber에 해당하는 상품 목록을 가져옵니다.
         List<ProductWithSerialNumberDTO> productList = mypageService.getProductListBySerialNumber(serialNumber);
@@ -46,9 +53,17 @@ public class MypageController {
         }
     }
 
-    // 제품 ID로 제품 정보를 조회하는 GET 요청 처리
+    /**
+     * 마이페이지->구매목록->결제상태='결제대기'일 경우->결제페이지(serialNumber, productId를 가지고)로 연결
+     *
+     * @param serialNumber
+     * @param productId
+     * @return
+     */
     @GetMapping("/productDetails")
-    public ResponseEntity<?> getProductDetails(@RequestParam String serialNumber, @RequestParam String productId) {
+    public ResponseEntity<?> getProductDetails(
+            @RequestParam("serialNumber") String serialNumber,
+            @RequestParam("productId") String productId) {
         try {
             PaymentProductDTO product = mypageService.getProductById(serialNumber, productId);
             if (product != null) {
@@ -131,7 +146,7 @@ public class MypageController {
             productDTO.setSerialNumber("123456789");
             productDTO.setPtypeId(categoryName);
             productDTO.setIdolId(tagName);
-            productDTO.setTimeLimit(auctionDays*24+auctionHours);
+            productDTO.setTimeLimit(auctionDays * 24 + auctionHours);
             productDTO.setStorageStatus("PENDING");
             productDTO.setView(0);
             productDTO.setRequestTime(LocalDateTime.now());
@@ -192,7 +207,7 @@ public class MypageController {
         return ResponseEntity.ok(profileDTO);
     }
 
-    @PostMapping(value = "mypage-profile/{serialNumber}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @PostMapping(value = "mypage-profile/{serialNumber}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> saveProfile(
             @PathVariable String serialNumber,
             @RequestPart("userDTO") UserDTO userDTO,
