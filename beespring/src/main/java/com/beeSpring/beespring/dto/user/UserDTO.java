@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 public class UserDTO {
     private String serialNumber;
     private String userId;
+    private String provider;
     private int roleId;
     private String password;
     private String firstName;
@@ -39,6 +40,7 @@ public class UserDTO {
     private String tag1;
     private String tag2;
     private String tag3;
+    private String gender;
 
 //    public UserDTO(String profileImage, String nickname, String tag1, String tag2, String tag3, Object o) {
 //    }
