@@ -61,7 +61,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .defaultSuccessUrl("/index")
+                        .defaultSuccessUrl("/")
                         .failureUrl("/login?error=true")
                         .userInfoEndpoint(userInfo -> userInfo
                                 .oidcUserService(oidcUserService())
