@@ -75,7 +75,9 @@ public class AuthController {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+
             Optional<User> userOptional = userRepository.findByProviderAndUserId("service", authRequest.getUsername());
+
             if (userOptional.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -163,7 +165,7 @@ public class AuthController {
             if (birthdate != null && !birthdate.isEmpty()) {
                 user.setBirthdate(LocalDate.parse(birthdate));
             } else {
-                user.setBirthdate(LocalDate.of(0, 12, 25)); // 기본값 설정
+                user.setBirthdate(LocalDate.of(1992, 12, 25)); // 기본값 설정
             }
             user.setGender(selectedGender);
             log.debug("Saving user to repository");
@@ -172,12 +174,11 @@ public class AuthController {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
                     userRepository.save(user);
+                    saveShippingAddress(user.getSerialNumber(), detailAddress, postcode, name, mobileNumber, roadAddress);
                 }
             });
 
             log.debug("Creating shipping address for user: {}", username);
-
-            saveShippingAddress(user, detailAddress, postcode, name, mobileNumber, roadAddress);
 
             log.debug("User registered successfully: {}", username);
 
@@ -197,10 +198,9 @@ public class AuthController {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveShippingAddress(User user, String detailAddress, String postcode, String name, String mobileNumber, String roadAddress) {
-        System.out.println("유저 정보 : " + user.getSerialNumber());
+    public void saveShippingAddress(String serialNumber, String detailAddress, String postcode, String name, String mobileNumber, String roadAddress) {
         ShippingAddressDTO shippingAddressDTO = new ShippingAddressDTO();
-        shippingAddressDTO.setSerialNumber(user.getSerialNumber());
+        shippingAddressDTO.setSerialNumber(serialNumber);
         shippingAddressDTO.setAddressName("기본 배송지");
         shippingAddressDTO.setDetailAddress(detailAddress);
         shippingAddressDTO.setPostCode(postcode);
@@ -278,6 +278,7 @@ public class AuthController {
         return ResponseEntity.ok(CustomApiResponse.success(response, "User info fetched successfully"));
     }
 
+    @Transactional
     @PostMapping("/user-idol")
     public ResponseEntity<?> saveUserIdols(@RequestBody Map<String, Object> request) {
         String serialNumber = (String) request.get("serialNumber");
@@ -288,7 +289,14 @@ public class AuthController {
         }
 
         try {
-            userIdolService.saveUserIdols(serialNumber, idolIds);
+            User user = userRepository.findBySerialNumber(serialNumber).orElseThrow();
+
+            user.setTag1(String.valueOf(idolIds.get(0)));
+            user.setTag2(String.valueOf(idolIds.get(1)));
+            user.setTag3(String.valueOf(idolIds.get(2)));
+
+            userRepository.save(user);
+
             return ResponseEntity.ok("Idols selected successfully");
         } catch (Exception e) {
             e.printStackTrace();
