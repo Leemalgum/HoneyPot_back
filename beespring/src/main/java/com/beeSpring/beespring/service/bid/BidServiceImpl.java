@@ -6,6 +6,7 @@ import com.beeSpring.beespring.dto.bid.ProductWithIdolNameDTO;
 import com.beeSpring.beespring.dto.main.MainProductDTO;
 import com.beeSpring.beespring.repository.bid.ProductRepository;
 import com.beeSpring.beespring.repository.main.MainProductRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -123,4 +124,13 @@ public class BidServiceImpl implements BidService{
         String userId = mainProductRepository.findUserIdByProductId(productId);
         return userId;
     }
+
+
+
+    @Transactional
+    @Override
+    public void increaseViewCount(String productId) {
+        productRepository.incrementViewCount(productId);
+    }
+
 }

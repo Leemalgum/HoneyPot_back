@@ -17,4 +17,6 @@ public interface BidService {
     String getUserIdByProductId(String productId);
 
     Product getProductEntityById(String productId);
+
+    void increaseViewCount(String productId);
 }
