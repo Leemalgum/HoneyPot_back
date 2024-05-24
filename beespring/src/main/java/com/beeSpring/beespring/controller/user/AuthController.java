@@ -6,7 +6,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.beeSpring.beespring.domain.shipping.ShippingAddress;
 import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.dto.shipping.ShippingAddressDTO;
 import com.beeSpring.beespring.repository.shipping.ShippingAddressRepository;
@@ -44,10 +43,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
@@ -70,6 +67,7 @@ public class AuthController {
     private final ShippingAddressRepository shippingAddressRepository;
     private final TransactionTemplate transactionTemplate;
     private final ShippingServiceImpl shippingService;
+
 
     @Transactional
     @PostMapping("/login")
@@ -187,7 +185,6 @@ public class AuthController {
             });
 
             log.debug("Creating shipping address for user: {}", username);
-
             log.debug("User registered successfully: {}", username);
 
             return ResponseEntity.ok(serialNumber);
@@ -223,13 +220,13 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshAccessToken(@RequestBody HashMap<String, String> request) {
         String refreshToken = request.get("refreshToken");
-
         if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
         }
 
         String username = jwtTokenProvider.getUsername(refreshToken);
         String provider = jwtTokenProvider.getProvider(refreshToken);
+
         Optional<User> userOptional = userRepository.findByProviderAndUserId(provider, username);
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
@@ -257,7 +254,7 @@ public class AuthController {
     @GetMapping("/user-info")
     public ResponseEntity<CustomApiResponse<HashMap<String, String>>> getUserInfo(HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization");
-        System.out.println("액세스 토큰 : " + accessToken);
+
         if (accessToken != null && accessToken.startsWith("Bearer ")) {
             accessToken = accessToken.substring(7);
         } else {

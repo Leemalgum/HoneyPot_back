@@ -25,3 +25,4 @@ public class UserIdolService {
         userRepository.save(user);
     }
 }
+

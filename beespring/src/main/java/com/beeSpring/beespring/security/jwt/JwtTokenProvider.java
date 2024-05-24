@@ -15,9 +15,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Map;
-import java.util.HashMap;
-
 import java.security.Key;
 import java.util.Date;
 
@@ -69,8 +66,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-
-    // 인증 정보 조회
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
@@ -94,7 +89,6 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
-    // 토큰에서 만료 날짜를 추출하여 LocalDateTime으로 반환
     public LocalDateTime getExpirationDate(String token) {
         Date expiration = Jwts.parser()
                 .setSigningKey(key)

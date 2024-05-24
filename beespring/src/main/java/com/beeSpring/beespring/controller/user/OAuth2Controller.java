@@ -9,17 +9,15 @@ import com.beeSpring.beespring.service.user.KakaoOAuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -63,6 +61,7 @@ public class OAuth2Controller {
                 throw new IllegalArgumentException("Access token is null or empty.");
             }
             logger.info("Received accessToken: {}", accessToken);
+
             String email = (String) userData.get("email");
             String profileImage = (String) userData.get("profileImage");
             Integer expiresIn = (Integer) userData.get("expiresIn");
@@ -90,6 +89,7 @@ public class OAuth2Controller {
             user.setProvider("kakao");
             user.setEmail(email);
             user.setProfileImage(profileImage);
+
 /*            user.setAccessToken(accessToken);
             user.setRefreshToken(refreshToken);
             long accessTokenExpirationMillis = System.currentTimeMillis() + (expiresIn * 1000L);
@@ -103,11 +103,13 @@ public class OAuth2Controller {
                     .toLocalDateTime();
 
             user.setAccessTokenExpiration(accessTokenExpiration);
+
             user.setRefreshTokenExpiration(refreshTokenExpiration);*/
             user.setAccessToken(jwtAccessToken);
             user.setRefreshToken(jwtRefreshToken);
             user.setAccessTokenExpiration(jwtAccessTokenExpiration);
             user.setRefreshTokenExpiration(jwtRefreshTokenExpiration);
+
             userRepository.save(user);
 
             HashMap<String, String> map = new HashMap<>();
@@ -117,9 +119,6 @@ public class OAuth2Controller {
             map.put("accessTokenExpiration", String.valueOf(jwtAccessTokenExpiration));
             map.put("refreshTokenExpiration", String.valueOf(jwtRefreshTokenExpiration));
             map.put("redirectUrl", "http://localhost:3000");
-
-            //HttpSession session = request.getSession();
-            //session.setAttribute("JWT_TOKEN", jwtAccessToken);
 
             logger.info("Login successful for userId: {}", userId);
             return ResponseEntity.ok(CustomApiResponse.success(map, ResponseCode.USER_LOGIN_SUCCESS.getMessage()));

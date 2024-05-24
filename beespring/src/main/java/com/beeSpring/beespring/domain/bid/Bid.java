@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Bid {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bid_id")
     private Integer bidId;
 
