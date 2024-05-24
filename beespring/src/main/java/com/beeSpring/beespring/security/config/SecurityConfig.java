@@ -55,8 +55,8 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeRequests(auth -> auth
-                        .requestMatchers("/index","/", "/auth/**", "/login", "/signup", "/api/oauth2/**").permitAll()
-                        .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/index","/**", "/auth/**", "/login", "/signup", "/api/oauth2/**", "/mypage/**").permitAll()
+                        .requestMatchers("/api/v1/user/**", "/mypage/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
