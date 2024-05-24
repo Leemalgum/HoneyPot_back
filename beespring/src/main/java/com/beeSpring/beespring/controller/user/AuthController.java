@@ -48,6 +48,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -163,7 +165,13 @@ public class AuthController {
             user.setEmail(email);
             user.setRegistrationDate(LocalDateTime.now());
             if (birthdate != null && !birthdate.isEmpty()) {
-                user.setBirthdate(LocalDate.parse(birthdate));
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+                    user.setBirthdate(LocalDate.parse(birthdate, formatter));
+                } catch (DateTimeParseException e) {
+                    log.error("Invalid birthdate format: {}", birthdate, e);
+                    return ResponseEntity.badRequest().body("Invalid birthdate format");
+                }
             } else {
                 user.setBirthdate(LocalDate.of(1992, 12, 25)); // 기본값 설정
             }
