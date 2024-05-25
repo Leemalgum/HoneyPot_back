@@ -2,16 +2,14 @@ package com.beeSpring.beespring.domain.user;
 
 import com.beeSpring.beespring.domain.category.Idol;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name="User_Idol")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserIdol {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
