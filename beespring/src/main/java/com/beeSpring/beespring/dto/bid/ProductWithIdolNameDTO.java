@@ -33,4 +33,5 @@ public class ProductWithIdolNameDTO {
     private int bidCnt;
     private LocalDateTime requestTime;
     private String storageStatus;
+    private String ptypeName;
 }
