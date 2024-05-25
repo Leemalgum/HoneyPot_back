@@ -1,11 +1,17 @@
 package com.beeSpring.beespring.service.user;
 
+import com.beeSpring.beespring.domain.category.Idol;
+import com.beeSpring.beespring.domain.shipping.ShippingAddress;
 import com.beeSpring.beespring.domain.user.User;
+import com.beeSpring.beespring.domain.user.UserIdol;
+import com.beeSpring.beespring.dto.shipping.ShippingAddressDTO;
+import com.beeSpring.beespring.dto.user.UserIdolDTO;
+import com.beeSpring.beespring.repository.category.IdolRepository;
+import com.beeSpring.beespring.repository.user.UserIdolRepository;
 import com.beeSpring.beespring.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 
 import java.util.List;
 
@@ -13,16 +19,22 @@ import java.util.List;
 @Service
 public class UserIdolService {
     private final UserRepository userRepository;
+    private final IdolRepository idolRepository;
+    private final UserIdolRepository userIdolRepository;
 
     @Transactional
-    public void saveUserIdols(String serialNumber, List<Integer> idolIds) {
-        User user = userRepository.findById(serialNumber).orElseThrow(() -> new IllegalArgumentException("Invalid serial number"));
+    public void saveUserIdol(UserIdolDTO userIdolDTO) {
+        User user = userRepository.findById(userIdolDTO.getSerialNumber())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user serial number"));
+        Idol idol = idolRepository.findByIdolId(userIdolDTO.getIdolId());
 
-        user.setTag1(String.valueOf(idolIds.get(0)));
-        user.setTag2(String.valueOf(idolIds.get(1)));
-        user.setTag3(String.valueOf(idolIds.get(2)));
+        UserIdol userIdol = new UserIdol(
+                userIdolDTO.getUserIdolId(),
+                user,
+                idol
+                );
 
-        userRepository.save(user);
+        userIdolRepository.save(userIdol);
     }
 }
 
