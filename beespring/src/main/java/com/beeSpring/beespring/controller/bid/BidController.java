@@ -71,7 +71,7 @@ public class BidController {
         }
     }
 
-    @GetMapping("/bids/{serialNumber}")
+    @GetMapping("/mypage/bids/{serialNumber}")
     public List<BidDTO> getMostRecentBidsByUser(@PathVariable String serialNumber) {
         return bidLogService.getMostRecentBidsByUser(serialNumber);
     }
