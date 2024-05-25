@@ -10,7 +10,6 @@ import com.beeSpring.beespring.domain.category.Idol;
 import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.domain.user.UserIdol;
 import com.beeSpring.beespring.dto.shipping.ShippingAddressDTO;
-import com.beeSpring.beespring.dto.user.UserIdolDTO;
 import com.beeSpring.beespring.repository.category.IdolRepository;
 import com.beeSpring.beespring.repository.shipping.ShippingAddressRepository;
 import com.beeSpring.beespring.repository.user.UserIdolRepository;

@@ -1,5 +1,6 @@
 package com.beeSpring.beespring.domain.user;
 
+import com.beeSpring.beespring.domain.bid.Bid;
 import com.beeSpring.beespring.domain.bid.Product;
 import com.beeSpring.beespring.domain.shipping.ShippingAddress;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -113,6 +114,10 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Product> products;
+
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    private List<Bid> bids;
 
     @Override
     public String toString() {

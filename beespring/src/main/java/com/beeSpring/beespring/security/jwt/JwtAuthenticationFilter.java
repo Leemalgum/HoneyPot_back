@@ -43,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = getJwtFromRequest(request);
+
         logger.debug("Token resolved: " + token); // 해결된 토큰 로그
 
         if (token != null && jwtTokenProvider.validateToken(token)) {

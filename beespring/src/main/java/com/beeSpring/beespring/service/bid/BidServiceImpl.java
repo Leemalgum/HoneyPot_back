@@ -49,6 +49,7 @@ public class BidServiceImpl implements BidService{
             productDTO.setBidCnt(product.getBidCnt());
             productDTO.setRequestTime(product.getRequestTime());
             productDTO.setStorageStatus(String.valueOf(product.getStorageStatus()));
+            productDTO.setPtypeName(product.getProductType().getPtypeName());
 
             products.add(productDTO);
         }

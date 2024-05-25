@@ -26,7 +26,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-
+//@RequestMapping("/mypage")
 public class MypageController {
     private final MypageService mypageService;
     private static final Logger log = LoggerFactory.getLogger(MypageController.class);
@@ -40,7 +40,7 @@ public class MypageController {
      * @param serialNumber
      * @return
      */
-    @GetMapping(path = "/salesList/{serialNumber}")
+    @GetMapping(path = "/mypage/salesList/{serialNumber}")
     public ResponseEntity<List<ProductWithSerialNumberDTO>> getSalesList(@PathVariable("serialNumber") String serialNumber) {
         // serialNumber를 이용하여 ProductService를 통해 해당 serialNumber에 해당하는 상품 목록을 가져옵니다.
         List<ProductWithSerialNumberDTO> productList = mypageService.getProductListBySerialNumber(serialNumber);
@@ -58,7 +58,7 @@ public class MypageController {
      * @param serialNumber
      * @return
      */
-    @GetMapping(path = "/purchaseList/{serialNumber}")
+    @GetMapping(path = "/mypage/purchaseList/{serialNumber}")
     public ResponseEntity<List<ProductWithSerialNumberDTO>> getPurchaseList(@PathVariable("serialNumber") String serialNumber) {
         // serialNumber를 이용하여 ProductService를 통해 해당 serialNumber에 해당하는 상품 목록을 가져옵니다.
         List<ProductWithSerialNumberDTO> productList = mypageService.getPurchaseListBySerialNumber(serialNumber);
@@ -76,7 +76,7 @@ public class MypageController {
      * @param productId
      * @return
      */
-    @GetMapping("/productDetails")
+    @GetMapping("/mypage/productDetails")
     public ResponseEntity<?> getProductDetails(
             @RequestParam("serialNumber") String serialNumber,
             @RequestParam("productId") String productId) {
@@ -97,7 +97,7 @@ public class MypageController {
      * @param productId
      * @return
      */
-    @PutMapping("/product/{productId}/start-sale")
+    @PutMapping("/mypage/product/{productId}/start-sale")
     public ResponseEntity<String> startSale(@PathVariable String productId) {
         try {
             mypageService.startSale(productId);
