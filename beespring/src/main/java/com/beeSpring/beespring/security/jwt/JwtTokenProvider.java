@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-
 import java.security.Key;
 import java.util.Date;
 
@@ -41,13 +40,13 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    public String createAccessToken(String username) {
-        Claims claims = Jwts.claims().setSubject(username).build();
+    public String createAccessToken(String username, String provider) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setClaims(claims)
+                .setSubject(username)
+                .setIssuer(provider)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -67,23 +66,29 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-
-    // 인증 정보 조회
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    public String getUsername(String token) {
-        return Jwts.parser()
+    public String getProvider(String token) {
+        Claims claims = Jwts.parser()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
+        return claims.getIssuer();
     }
 
-    // 토큰에서 만료 날짜를 추출하여 LocalDateTime으로 반환
+    public String getUsername(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
+    }
+
     public LocalDateTime getExpirationDate(String token) {
         Date expiration = Jwts.parser()
                 .setSigningKey(key)

@@ -44,7 +44,7 @@ public class ShippingAddress {
 //    private Long serialNumber;
 
     @ManyToOne
-    @JoinColumn(name = "serial_number", insertable = false, updatable = false)
+    @JoinColumn(name = "serial_number", referencedColumnName = "serial_number")
     @JsonBackReference
     private User user;
 }
