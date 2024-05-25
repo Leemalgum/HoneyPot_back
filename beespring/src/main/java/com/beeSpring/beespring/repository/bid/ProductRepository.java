@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, String> {
-    @Query("SELECT p, i.idolName FROM Product p JOIN p.idol i")
+    @Query("SELECT p, i.idolName, pt.ptypeName FROM Product p JOIN p.idol i JOIN p.productType pt")
     List<Object[]> findAllWithIdolName();
     //    @Query("SELECT p.productId, br.paymentStatus, br.completeDate, sh.deliveryStatus, u.serialNumber, p.productName, p.image1, p.priceUnit, p.startPrice, p.bidCnt, u.nickname FROM Shipping sh JOIN sh.bidResult br JOIN br.product p JOIN p.user u WHERE u.serialNumber = :serialNumber\n")
 //    @Query("SELECT p.productId, br.paymentStatus, br.completeDate, sh.deliveryStatus, u.serialNumber, p.productName, p.image1, p.priceUnit, p.startPrice, p.bidCnt, u.nickname " +

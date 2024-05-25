@@ -2,6 +2,7 @@ package com.beeSpring.beespring.controller.bid;
 import com.beeSpring.beespring.domain.bid.Bid;
 import com.beeSpring.beespring.domain.bid.Product;
 import com.beeSpring.beespring.domain.user.User;
+import com.beeSpring.beespring.dto.bid.BidDTO;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.bid.ProductWithIdolNameDTO;
 import com.beeSpring.beespring.dto.main.MainProductDTO;
@@ -68,5 +69,10 @@ public class BidController {
             System.out.println("Bid placement failed due to unexpected error: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/bids/{serialNumber}")
+    public List<BidDTO> getMostRecentBidsByUser(@PathVariable String serialNumber) {
+        return bidLogService.getMostRecentBidsByUser(serialNumber);
     }
 }
