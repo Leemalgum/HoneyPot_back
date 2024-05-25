@@ -1,8 +1,10 @@
 package com.beeSpring.beespring.config;
 
 import io.netty.channel.ChannelOption;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -15,12 +17,17 @@ import java.time.Duration;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+    @Value("${kakao.api.url}")
+    private String kakaoApiUrl;
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
+    @Value("${kakao.api.key}")
+    private String kakaoApiKey;
+
+    @Bean
+    public ReactorResourceFactory resourceFactory() {
+        ReactorResourceFactory factory = new ReactorResourceFactory();
+        factory.setUseGlobalResources(false);
+        return factory;
     }
 
     @Bean
@@ -29,6 +36,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
                         .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)  // 5 seconds
                         .responseTimeout(Duration.ofMillis(5000))))          // 5 seconds
+                .baseUrl(kakaoApiUrl)
+                .defaultHeader("Authorization", "KakaoAK " + kakaoApiKey)
                 .build();
     }
 }

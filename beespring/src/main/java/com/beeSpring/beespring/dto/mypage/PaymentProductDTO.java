@@ -2,6 +2,8 @@ package com.beeSpring.beespring.dto.mypage;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -15,8 +17,6 @@ public class PaymentProductDTO {
     private int bidCnt;
     private int startPrice;
     private String recipientName;
-    private String postCode;
-    private String roadAddress;
-    private String detailAddress;
+    private List<AddressDTO> address;
     private String recipientPhone;
 }
