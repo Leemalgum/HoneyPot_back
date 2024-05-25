@@ -11,6 +11,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "Product")
@@ -90,6 +91,9 @@ public class Product {
     @Enumerated(EnumType.STRING)
     @Column(name = "storage_status")
     private StorageStatus storageStatus;
+
+    @OneToMany(mappedBy = "product")
+    private List<Bid> bids;
 
     public Product() {
 
