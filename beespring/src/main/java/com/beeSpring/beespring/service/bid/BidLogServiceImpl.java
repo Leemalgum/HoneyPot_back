@@ -3,6 +3,7 @@ package com.beeSpring.beespring.service.bid;
 import com.beeSpring.beespring.domain.bid.Bid;
 import com.beeSpring.beespring.domain.bid.Product;
 import com.beeSpring.beespring.domain.user.User;
+import com.beeSpring.beespring.dto.bid.BidDTO;
 import com.beeSpring.beespring.repository.bid.BidLogRepository;
 import com.beeSpring.beespring.repository.bid.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 @Service
 public class BidLogServiceImpl implements BidLogService {
@@ -57,4 +59,25 @@ public class BidLogServiceImpl implements BidLogService {
     public List<Bid> getBidsForProduct(Product product) {
         return CompletableFuture.supplyAsync(() -> bidLogRepository.findByProduct(product), executorService).join();
     }
+
+    @Override
+    public List<BidDTO> getMostRecentBidsByUser(String serialNumber) {
+        return bidLogRepository.findMostRecentBidsByUser(serialNumber).stream()
+                .map(bid -> {
+                    BidDTO bidDTO = new BidDTO();
+                    bidDTO.setProductId(bid.getProduct().getProductId());
+                    bidDTO.setSellerId(bid.getProduct().getUser().getUserId());
+                    bidDTO.setProductName(bid.getProduct().getProductName());
+                    bidDTO.setProductInfo(bid.getProduct().getProductInfo());
+                    bidDTO.setPrice(bid.getPrice());
+                    bidDTO.setImage1(bid.getProduct().getImage1());
+                    bidDTO.setDeadline(bid.getProduct().getDeadline());
+                    bidDTO.setCurrentPrice(bid.getProduct().getPrice());
+                    bidDTO.setNickName(bid.getUser().getNickname());
+                    return bidDTO;
+                })
+                .collect(Collectors.toList());
+    }
+
+
 }
