@@ -244,6 +244,12 @@
 				<artifactId>jaxb-core</artifactId>
 				<version>2.3.0.1</version>
 			</dependency>
+		<!-- 휴대 전화 문자 인증 -->
+		<dependency>
+			<groupId>net.nurigo</groupId>
+			<artifactId>sdk</artifactId>
+			<version>4.3.0</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
