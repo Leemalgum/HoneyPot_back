@@ -6,15 +6,18 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.beeSpring.beespring.domain.category.Idol;
 import com.beeSpring.beespring.domain.user.User;
+import com.beeSpring.beespring.domain.user.UserIdol;
 import com.beeSpring.beespring.dto.shipping.ShippingAddressDTO;
+import com.beeSpring.beespring.dto.user.UserIdolDTO;
+import com.beeSpring.beespring.repository.category.IdolRepository;
 import com.beeSpring.beespring.repository.shipping.ShippingAddressRepository;
+import com.beeSpring.beespring.repository.user.UserIdolRepository;
 import com.beeSpring.beespring.repository.user.UserRepository;
 import com.beeSpring.beespring.response.CustomApiResponse;
 import com.beeSpring.beespring.response.ResponseCode;
 import com.beeSpring.beespring.security.jwt.JwtTokenProvider;
-import com.beeSpring.beespring.service.mypage.MypageServiceImpl;
-import com.beeSpring.beespring.service.shipping.ShippingService;
 import com.beeSpring.beespring.service.shipping.ShippingServiceImpl;
 import com.beeSpring.beespring.service.user.UserIdolService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,10 +60,12 @@ import java.util.Optional;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private static final Logger logger = LoggerFactory.getLogger(MypageServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
+    private final UserIdolRepository userIdolRepository;
+    private final IdolRepository idolRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final AmazonS3 s3Client;
     private final UserIdolService userIdolService;
@@ -71,8 +76,10 @@ public class AuthController {
 
     @Transactional
     @PostMapping("/login")
-    public ResponseEntity<CustomApiResponse<HashMap<String, String>>> login(@RequestBody AuthRequest authRequest, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<CustomApiResponse<HashMap<String, String>>> login(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestBody AuthRequest authRequest, HttpServletRequest request, HttpServletResponse response) {
         try {
+            System.out.println("Authorization Header: " + authorizationHeader);
+
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
 
@@ -293,15 +300,18 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Invalid request data");
         }
 
+        User user = userRepository.findBySerialNumber(serialNumber)
+                .orElseThrow();
+
         try {
-            User user = userRepository.findBySerialNumber(serialNumber).orElseThrow();
-
-            user.setTag1(String.valueOf(idolIds.get(0)));
-            user.setTag2(String.valueOf(idolIds.get(1)));
-            user.setTag3(String.valueOf(idolIds.get(2)));
-
-            userRepository.save(user);
-
+            for (Integer idolId : idolIds) {
+                Idol idol = idolRepository.findById(idolId).orElseThrow(() -> new RuntimeException("Idol not found: " + idolId));
+                UserIdol userIdol = UserIdol.builder()
+                        .user(user)
+                        .idol(idol)
+                        .build();
+                userIdolRepository.save(userIdol);
+            }
             return ResponseEntity.ok("Idols selected successfully");
         } catch (Exception e) {
             e.printStackTrace();
