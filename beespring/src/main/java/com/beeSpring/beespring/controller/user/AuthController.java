@@ -77,7 +77,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<CustomApiResponse<HashMap<String, String>>> login(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestBody AuthRequest authRequest, HttpServletRequest request, HttpServletResponse response) {
         try {
-            System.out.println("Authorization Header: " + authorizationHeader);
+            String bearerToken = request.getHeader("Authorization");
+            logger.debug("Login Authorization Header: " + bearerToken);
 
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
