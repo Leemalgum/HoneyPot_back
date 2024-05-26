@@ -36,8 +36,7 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/api/oauth2")
 public class OAuth2Controller {
-
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    private static final Logger logger = LoggerFactory.getLogger(OAuth2Controller.class);
 
     private final UserRepository userRepository;
     private final KakaoOAuthService kakaoOAuthService;

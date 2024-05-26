@@ -1,6 +1,7 @@
 package com.beeSpring.beespring.domain.bid;
 
 import com.beeSpring.beespring.domain.user.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class Bid {
 
     @ManyToOne
     @JoinColumn(name = "serial_number")
+    @JsonBackReference
     private User user;
 
     @Column(name = "price")
