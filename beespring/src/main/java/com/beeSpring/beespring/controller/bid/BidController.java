@@ -1,5 +1,6 @@
 package com.beeSpring.beespring.controller.bid;
 import com.beeSpring.beespring.domain.bid.Bid;
+import com.beeSpring.beespring.domain.bid.BidResult;
 import com.beeSpring.beespring.domain.bid.Product;
 import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.dto.bid.BidDTO;
@@ -74,5 +75,13 @@ public class BidController {
     @GetMapping("/mypage/bids/{serialNumber}")
     public List<BidDTO> getMostRecentBidsByUser(@PathVariable String serialNumber) {
         return bidLogService.getMostRecentBidsByUser(serialNumber);
+    }
+
+    @PostMapping(path = "/bid/result")
+    public ResponseEntity<BidResult> insertBidResult(@RequestParam String productId) {
+
+        BidResult bidResult = bidService.insertBidResultByProductIdAndSerialNumber(productId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(bidResult);
     }
 }

@@ -25,6 +25,9 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
 //            "where ui.serialNumber = ?1")
 
 
+
+
+    //
     @Query("SELECT i.idolId, i.idolName " +
             "FROM UserIdol ui " +
             "JOIN ui.idol i " +
@@ -48,7 +51,7 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
             "JOIN p.productType t " +
             "JOIN p.user u " +
             "WHERE i.idolName = :idolName " +
-            "AND p.storageStatus = 'PENDING' " +
+            "AND p.storageStatus = 'SELLING' " +
             "ORDER BY FUNCTION('RAND') DESC")
 //    List<Object[]> findByCategory(List<String> idolName);
     List<Object[]> findByCategory(@Param("idolName") String idolName, Pageable pageable);
@@ -65,7 +68,7 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
             "JOIN p.idol i " +
             "JOIN p.productType t " +
             "JOIN p.user u " +
-            "WHERE p.storageStatus = 'PENDING' " +
+            "WHERE p.storageStatus = 'SELLING' " +
             "ORDER BY p.view DESC " +
             "LIMIT 12")
     List<Object[]> findByView();
@@ -81,7 +84,7 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
             "JOIN p.idol i " +
             "JOIN p.productType t " +
             "JOIN p.user u " +
-            "WHERE p.storageStatus = 'PENDING' " +
+            "WHERE p.storageStatus = 'SELLING' " +
             "ORDER BY p.deadline DESC " +
             "LIMIT 12")
     List<Object[]> findByDeadLine();
@@ -98,7 +101,7 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
             "JOIN p.idol i " +
             "JOIN p.productType t " +
             "JOIN p.user u " +
-            "WHERE p.storageStatus = 'PENDING' " +
+            "WHERE p.storageStatus = 'SELLING' " +
             "ORDER BY p.registrationDate DESC " +
             "LIMIT 12")
     List<Object[]> findByLatest();
