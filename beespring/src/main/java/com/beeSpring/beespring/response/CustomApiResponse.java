@@ -4,7 +4,7 @@ public class CustomApiResponse<T> {
     private String message;
     private T data;
     private int statusCode;
-    private boolean success; // 성공 여부 필드 추가
+    private boolean success;
 
     public CustomApiResponse(String message, T data, int statusCode, boolean success) {
         this.message = message;

@@ -5,7 +5,8 @@ public enum ResponseCode {
     USER_LOGIN_SUCCESS("User login successful", 200),
     USER_LOGIN_FAILURE("User login failed", 401),
     USER_NOT_FOUND("User not found", 404),
-    ERROR("Internal Server Error", 500);
+    ERROR("Internal Server Error", 500),
+    SEND_MMS_SUCCESS("Send mms successful", 200);
 
     private final String message;
     private final int code;
