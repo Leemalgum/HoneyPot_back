@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class BidResult {
     @Id
     @Column(name = "bid_result_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bidResultId;
 
     @Column(name = "order_id")
@@ -44,4 +45,30 @@ public class BidResult {
     @Column(name = "customer_id")
     private String customerId;
 
+    public BidResult(Product product, int paymentStatus, LocalDateTime endTime, LocalDateTime enrolledTime, String customerId, BidResultStatus result) {
+
+        this.product = product;
+        this.paymentStatus = paymentStatus;
+        this.endTime = endTime;
+        this.enrolledTime = enrolledTime;
+        this.customerId = customerId;
+        this.result = result;
+
+    }
+
+    @Override
+    public String toString() {
+        return "BidResult{" +
+                "bidResultId=" + bidResultId +
+                ", orderId='" + orderId + '\'' +
+                ", product=" + product +
+                ", paymentStatus=" + paymentStatus +
+                ", result=" + result +
+                ", endTime=" + endTime +
+                ", modTime=" + modTime +
+                ", completeDate=" + completeDate +
+                ", enrolledTime=" + enrolledTime +
+                ", customerId='" + customerId + '\'' +
+                '}';
+    }
 }
