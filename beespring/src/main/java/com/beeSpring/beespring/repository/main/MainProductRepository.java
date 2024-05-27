@@ -26,6 +26,10 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
 
 
 
+     @Query("SELECT i.idolId, i.idolName " +
+             "FROM UserIdol ui " +
+             "JOIN ui.idol i " +
+             "WHERE ui.user.serialNumber = :serialNumber")
 
     //
      @Query("SELECT i.idolId, i.idolName " +

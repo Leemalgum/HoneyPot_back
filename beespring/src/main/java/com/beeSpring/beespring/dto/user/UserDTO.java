@@ -37,9 +37,6 @@ public class UserDTO {
     private LocalDateTime accessTokenExpiration;
     private LocalDateTime refreshTokenExpiration;
     private String profileImage;
-    private String tag1;
-    private String tag2;
-    private String tag3;
     private String gender;
 
 //    public UserDTO(String profileImage, String nickname, String tag1, String tag2, String tag3, Object o) {
@@ -66,9 +63,6 @@ public class UserDTO {
                 ", modDate=" + modDate +
                 ", refreshToken='" + refreshToken + '\'' +
                 ", profileImage=" + profileImage +
-                ", tag1='" + tag1 + '\'' +
-                ", tag2='" + tag2 + '\'' +
-                ", tag3='" + tag3 + '\'' +
                 '}';
     }
 }
