@@ -4,6 +4,8 @@ import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.repository.user.UserRepository;
 import com.beeSpring.beespring.response.CustomApiResponse;
 import com.beeSpring.beespring.response.ResponseCode;
+import com.beeSpring.beespring.security.jwt.JwtTokenProvider;
+import jakarta.annotation.PostConstruct;
 import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException;
 import net.nurigo.sdk.message.model.Balance;
@@ -18,6 +20,8 @@ import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +40,24 @@ import java.util.*;
 @RequestMapping("/mms")
 public class MobileController {
     private static final Logger log = LoggerFactory.getLogger(MobileController.class);
-    private final DefaultMessageService messageService;
+    private DefaultMessageService messageService;
     private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public MobileController(UserRepository userRepository) {
-        this.messageService = NurigoApp.INSTANCE.initialize("${coolsms.api.key}", "${coolsms.api.secret}", "https://api.coolsms.co.kr");
+    @Value("${coolsms.api.key}")
+    private String apiKey;
+
+    @Value("${coolsms.api.secret}")
+    private String apiSecret;
+
+    public MobileController(UserRepository userRepository, @Lazy JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    @PostConstruct
+    public void init() {
+        this.messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecret, "https://api.coolsms.co.kr");
     }
 
     /**
@@ -108,10 +124,21 @@ public class MobileController {
 
                 String authCode = generateRandomAuthCode();
 
-                message.setText("인증번호는 [" + authCode + "] 입니다.");
+                message.setText("꿀단지 인증번호는 [" + authCode + "] 입니다.");
 
-                SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
-                System.out.println(response);
+                /*SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
+                System.out.println(response);*/
+
+                try {
+                    // send 메소드로 ArrayList<Message> 객체를 넣어도 동작합니다!
+                    messageService.send(message);
+                } catch (NurigoMessageNotReceivedException exception) {
+                    // 발송에 실패한 메시지 목록을 확인할 수 있습니다!
+                    System.out.println(exception.getFailedMessageList());
+                    System.out.println(exception.getMessage());
+                } catch (Exception exception) {
+                    System.out.println(exception.getMessage());
+                }
 
                 User user = userOptional.get();
                 String userId = user.getUserId();
