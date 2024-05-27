@@ -1,5 +1,6 @@
 package com.beeSpring.beespring.service.bid;
 
+import com.beeSpring.beespring.domain.bid.BidResult;
 import com.beeSpring.beespring.domain.bid.Product;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.bid.ProductWithIdolNameDTO;
@@ -19,4 +20,5 @@ public interface BidService {
     Product getProductEntityById(String productId);
 
     void increaseViewCount(String productId);
+    BidResult insertBidResultByProductIdAndSerialNumber(String productId);
 }

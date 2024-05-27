@@ -93,15 +93,6 @@ public class User {
     @Column(name="profile_image")
     private String profileImage;
 
-    @Column(name = "tag1")
-    private String tag1;
-
-    @Column(name = "tag2")
-    private String tag2;
-
-    @Column(name = "tag3")
-    private String tag3;
-
     @Column(name = "gender")
     private String gender;
 
@@ -140,9 +131,6 @@ public class User {
                 ", modDate=" + modDate +
                 ", refreshToken='" + refreshToken + '\'' +
                 ", profileImage=" + profileImage +
-                ", tag1='" + tag1 + '\'' +
-                ", tag2='" + tag2 + '\'' +
-                ", tag3='" + tag3 + '\'' +
                 '}';
     }
 }
