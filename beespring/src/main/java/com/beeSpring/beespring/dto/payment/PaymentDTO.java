@@ -30,4 +30,5 @@ public class PaymentDTO {
     private String pg_tid;
     private String card_name;
     private String card_number;
+
 }

@@ -1,5 +1,6 @@
 package com.beeSpring.beespring.controller.payment;
 
+
 import com.beeSpring.beespring.dto.payment.PaymentDTO;
 import com.beeSpring.beespring.service.payment.PaymentServiceImpl;
 import lombok.extern.log4j.Log4j2;
@@ -47,4 +48,5 @@ public class PaymentController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
 }

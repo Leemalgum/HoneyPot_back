@@ -1,16 +1,5 @@
 package com.beeSpring.beespring.domain.payment;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-@Entity
-@Table(name = "payment", catalog = "BeeSpringDB")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Payment {
     @Id
     private String order_id;
@@ -42,3 +31,4 @@ public class Payment {
     private String card_number;
 
 }
+

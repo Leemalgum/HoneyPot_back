@@ -1,14 +1,24 @@
 package com.beeSpring.beespring.service.bid;
 
+import com.beeSpring.beespring.domain.bid.BidResult;
+import com.beeSpring.beespring.domain.bid.Product;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.bid.ProductWithIdolNameDTO;
+import com.beeSpring.beespring.dto.main.MainProductDTO;
 
 import java.util.List;
 
 
 public interface BidService {
 
-    public List<ProductWithIdolNameDTO> getAllProductsWithIdolName();
+    List<ProductWithIdolNameDTO> getAllProductsWithIdolName();
 
-    public ProductDTO getProductById(String productId);
+    MainProductDTO getProductById(String productId);
+
+    String getUserIdByProductId(String productId);
+
+    Product getProductEntityById(String productId);
+
+    void increaseViewCount(String productId);
+    BidResult insertBidResultByProductIdAndSerialNumber(String productId);
 }
