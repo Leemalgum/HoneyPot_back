@@ -42,7 +42,7 @@ public class BidServiceImpl implements BidService{
             productDTO.setPrice(product.getPrice());
             productDTO.setPriceUnit(product.getPriceUnit());
             productDTO.setBuyNow(product.getBuyNow());
-            //productDTO.setTimeLimit(product.getTimeLimit());
+            productDTO.setTimeLimit(product.getTimeLimit());
             productDTO.setView(product.getView());
             productDTO.setStartPrice(product.getStartPrice());
             productDTO.setRegistrationDate(product.getRegistrationDate());

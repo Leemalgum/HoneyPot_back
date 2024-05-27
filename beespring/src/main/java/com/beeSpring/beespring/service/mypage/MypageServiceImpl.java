@@ -235,9 +235,6 @@ public class MypageServiceImpl implements MypageService {
                 user.getAccessTokenExpiration(),
                 user.getRefreshTokenExpiration(),
                 user.getProfileImage(),
-                user.getTag1(),
-                user.getTag2(),
-                user.getTag3(),
                 user.getGender()
         );
     }
@@ -254,9 +251,7 @@ public class MypageServiceImpl implements MypageService {
         }
 
         user.setNickname(userDTO.getNickname());
-        user.setTag1(userDTO.getTag1());
-        user.setTag2(userDTO.getTag2());
-        user.setTag3(userDTO.getTag3());
+
 
         userRepository.save(user);
     }

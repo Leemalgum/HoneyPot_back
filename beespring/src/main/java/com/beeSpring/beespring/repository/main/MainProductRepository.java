@@ -25,10 +25,12 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
 //            "where ui.serialNumber = ?1")
 
 
-    @Query("SELECT i.idolId, i.idolName " +
-            "FROM UserIdol ui " +
-            "JOIN ui.idol i " +
-            "WHERE ui.user.serialNumber = :serialNumber")
+
+     @Query("SELECT i.idolId, i.idolName " +
+             "FROM UserIdol ui " +
+             "JOIN ui.idol i " +
+             "WHERE ui.user.serialNumber = :serialNumber")
+
     List<Object[]> findIdolName(@Param("serialNumber") String serialNumber);
 //    List<String> findIdolsByUserId(@Param("serialNumber") String serialNumber);
 
