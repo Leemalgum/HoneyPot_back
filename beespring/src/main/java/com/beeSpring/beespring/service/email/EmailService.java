@@ -8,5 +8,5 @@ public interface EmailService {
 
     List<Object[]> sendBidClosingReminderEmail(String productId);
     MimeMessage createMail(String nickname, String email, String productName, String productId);
-    void sendPasswordResetEmail(String to, String resetUrl);
+    MimeMessage sendPasswordResetEmail(String to, String resetUrl);
 }
