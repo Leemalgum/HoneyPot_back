@@ -32,4 +32,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findBySerialNumber(String serialNumber);
 
     Optional<User> findByFirstNameAndMobileNumber(String firstName, String mobileNumber);
+
+    @Query("SELECT u FROM User u WHERE u.userId = :userId AND u.mobileNumber = :mobileNumber AND u.email = :email")
+    Optional<User> findByUserIdAndMobileNumberAndEmail(@Param("userId") String userId, @Param("mobileNumber") String mobileNumber, @Param("email") String email);
 }
