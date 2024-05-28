@@ -4,6 +4,7 @@ import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.mypage.PaymentProductDTO;
 import com.beeSpring.beespring.dto.mypage.ProductWithSerialNumberDTO;
 import com.beeSpring.beespring.domain.bid.Product;
+import com.beeSpring.beespring.dto.mypage.UserProfileDTO;
 import com.beeSpring.beespring.dto.user.UserDTO;
 import com.beeSpring.beespring.repository.bid.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,10 @@ public interface MypageService {
     String storeProfileImage(MultipartFile file) throws IOException;
 
     void registerProduct(ProductDTO productDTO);
-    UserDTO getProfile(String serialNumber);
+    UserProfileDTO getProfile(String serialNumber);
+
+    void updateProfile(String serialNumber, UserProfileDTO userProfileDTO, MultipartFile profileImageFile) throws IOException;
+
     void saveProfile(String serialNumber, UserDTO userDTO, MultipartFile profileImageFile) throws IOException;
 
     PaymentProductDTO getProductById(String serialNumber, String productId);
