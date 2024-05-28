@@ -105,7 +105,7 @@ public class MobileController {
     }
 
     /**
-     * 단일 메시지 발송
+     * 아이디 찾기 시 단일 메시지 발송
      */
     @PostMapping("/send-one")
     public ResponseEntity<?> sendOne(@RequestParam("name") String name,
@@ -152,6 +152,58 @@ public class MobileController {
                 return ResponseEntity.ok(CustomApiResponse.success(responseMap, ResponseCode.SEND_MMS_SUCCESS.getMessage()));
             } else {
                 log.warn("User not found with name: {} and mobile number: {}", name, mobileNumber);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            System.out.println("서버 오류");
+            log.error("Unexpected error", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * 회원 가입 시 단일 메시지 발송
+     */
+    @PostMapping("/send-one-signup")
+    public ResponseEntity<?> sendOneSignup(@RequestParam("name") String name,
+                                     @RequestParam("mobileNumber") String mobileNumber) {
+        System.out.println(name);
+        System.out.println(mobileNumber);
+
+        try {
+            Optional<User> userOptional = userRepository.findByFirstNameAndMobileNumber(name, mobileNumber);
+
+            if (!userOptional.isPresent()) {
+                Message message = new Message();
+
+                message.setFrom("01041147085");
+                message.setTo(mobileNumber);
+
+                String authCode = generateRandomAuthCode();
+
+                message.setText("꿀단지 인증번호는 [" + authCode + "] 입니다.");
+
+                /*SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
+                System.out.println(response);*/
+
+                try {
+                    // send 메소드로 ArrayList<Message> 객체를 넣어도 동작합니다!
+                    messageService.send(message);
+                } catch (NurigoMessageNotReceivedException exception) {
+                    // 발송에 실패한 메시지 목록을 확인할 수 있습니다!
+                    System.out.println(exception.getFailedMessageList());
+                    System.out.println(exception.getMessage());
+                } catch (Exception exception) {
+                    System.out.println(exception.getMessage());
+                }
+
+                Map<String, Object> responseMap = new HashMap<>();
+                responseMap.put("authCode", authCode);
+                responseMap.put("message", "인증번호가 발송되었습니다.");
+
+                return ResponseEntity.ok(CustomApiResponse.success(responseMap, ResponseCode.SEND_MMS_SUCCESS.getMessage()));
+            } else {
+                log.warn("User found with name: {} and mobile number: {}", name, mobileNumber);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
         } catch (Exception e) {
