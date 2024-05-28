@@ -39,7 +39,9 @@ public class EmailController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
         } else {
             String token = passwordResetTokenService.createPasswordResetTokenForUser(user.get());
-            String resetUrl = String.format("%s/reset-password?token=%s", "http://localhost:3000/resetPassword", token);
+            String resetUrl = String.format("%s?token=%s", "http://localhost:3000/resetPassword", token);
+            System.out.println("token : " + token);
+            System.out.println("resetUrl : " + resetUrl);
             emailService.sendPasswordResetEmail(request.getEmail(), resetUrl);
 
             return ResponseEntity.ok("비밀번호 재설정 이메일이 발송되었습니다.");
