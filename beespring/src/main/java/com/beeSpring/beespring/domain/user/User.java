@@ -96,6 +96,9 @@ public class User {
     @Column(name = "gender")
     private String gender;
 
+    @Column(name = "user_account")
+    private String userAccount;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<ShippingAddress> shippingAddresses;
