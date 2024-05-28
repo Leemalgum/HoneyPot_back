@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name="User_Idol")
+@Table(name="User_idol")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,7 +14,7 @@ public class UserIdol {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="user_idol_id")
-    private int userIdolId;
+    private Integer userIdolId;
 
     @ManyToOne
     @JoinColumn(name="serial_number")
