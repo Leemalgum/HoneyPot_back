@@ -380,7 +380,12 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam("token") String token, @RequestBody String newPassword) {
+    public ResponseEntity<?> resetPassword(@RequestParam("token") String token, @RequestBody Map<String, String> requestBody) {
+        String newPassword = requestBody.get("newPassword");
+        if (newPassword == null || newPassword.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New password is required");
+        }
+
         String result = passwordResetTokenService.validatePasswordResetToken(token);
         if (result != null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
