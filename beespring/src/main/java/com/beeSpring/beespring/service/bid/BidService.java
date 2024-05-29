@@ -21,4 +21,6 @@ public interface BidService {
 
     void increaseViewCount(String productId);
     BidResult insertBidResultByProductIdAndSerialNumber(String productId);
+
+    void updateProductStatusAfterConfirm(String productId, String storageStatus);
 }

@@ -3,10 +3,13 @@ package com.beeSpring.beespring.repository.user;
 import com.beeSpring.beespring.domain.user.OAuthUser;
 import com.beeSpring.beespring.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,4 +35,8 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findBySerialNumber(String serialNumber);
 
     Optional<User> findByFirstNameAndMobileNumber(String firstName, String mobileNumber);
+
+    @Query("SELECT i.idolName FROM UserIdol ui JOIN ui.idol i WHERE ui.user.serialNumber = :serialNumber")
+    List<String> findIdolNamesByUserSerialNumber(@Param("serialNumber") String serialNumber);
+
 }

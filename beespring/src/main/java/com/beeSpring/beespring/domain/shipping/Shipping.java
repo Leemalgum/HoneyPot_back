@@ -27,4 +27,7 @@ public class Shipping {
 
     @Column(name = "deliver_time")
     private LocalDateTime deliverTime;
+
+    @Column(name = "order_confirm")
+    private Boolean orderConfirm;
 }
