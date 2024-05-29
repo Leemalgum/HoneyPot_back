@@ -1,5 +1,6 @@
 package com.beeSpring.beespring.repository.bid;
 import com.beeSpring.beespring.domain.bid.Product;
+import com.beeSpring.beespring.domain.bid.StorageStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -45,4 +46,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     @Modifying
     @Query("UPDATE Product p SET p.view = p.view + 1 WHERE p.id = :productId")
     void incrementViewCount(@Param("productId") String productId);
+    @Query("SELECT p, i.idolName, pt.ptypeName FROM Product p JOIN p.idol i JOIN p.productType pt WHERE p.storageStatus IN (com.beeSpring.beespring.domain.bid.StorageStatus.PENDING, com.beeSpring.beespring.domain.bid.StorageStatus.PROCESSING)")
+    List<Object[]> findAllPendingAndProcessingWithIdolNameAndPtypeName();
+    @Transactional
+    @Modifying
+    @Query("UPDATE Product p SET p.storageStatus = :status WHERE p.productId = :productId")
+    void updateProductStatus(@Param("productId") String productId, @Param("status") StorageStatus status);
 }
