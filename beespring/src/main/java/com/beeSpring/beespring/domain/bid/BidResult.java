@@ -74,4 +74,16 @@ public class BidResult {
                 ", customerId='" + customerId + '\'' +
                 '}';
     }
+
+
+    public BidResult(Product product, int paymentStatus, LocalDateTime endTime, LocalDateTime enrolledTime, String customerId, String result) {
+
+        this.product = product;
+        this.paymentStatus = paymentStatus;
+        this.endTime = endTime;
+        this.enrolledTime = enrolledTime;
+        this.customerId = customerId;
+        this.result = BidResultStatus.valueOf(result);
+
+    }
 }
