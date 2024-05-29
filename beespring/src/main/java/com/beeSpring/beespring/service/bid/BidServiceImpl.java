@@ -1,9 +1,6 @@
 package com.beeSpring.beespring.service.bid;
 
-import com.beeSpring.beespring.domain.bid.Bid;
-import com.beeSpring.beespring.domain.bid.BidResult;
-import com.beeSpring.beespring.domain.bid.BidResultStatus;
-import com.beeSpring.beespring.domain.bid.Product;
+import com.beeSpring.beespring.domain.bid.*;
 import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.dto.bid.BidLogDTO;
 import com.beeSpring.beespring.dto.bid.BidResultDTO;
@@ -18,8 +15,10 @@ import com.beeSpring.beespring.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -148,40 +147,6 @@ public class BidServiceImpl implements BidService{
         productRepository.incrementViewCount(productId);
     }
 
-    @Transactional
-    @Override
-    public BidResult insertBidResultByProductIdAndSerialNumber(String productId) {
-        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
-        Bid bid = bidResultRepository.findHighestBidByProductId(productId);
-
-        Optional<User> user = userRepository.findBySerialNumber(bid.getUser().getSerialNumber());
-
-
-        BidResultDTO bidResultDTO = new BidResultDTO();
-        bidResultDTO.setProduct(product);
-        bidResultDTO.setPaymentStatus(0);
-        bidResultDTO.setEndTime(product.getDeadline());
-        bidResultDTO.setEnrolledTime(product.getDeadline());
-        bidResultDTO.setCustomerId(user.get().getUserId());
-
-        if(product.getBidCnt()==0) {
-            bidResultDTO.setResult(BidResultStatus.FAILURE);
-        } else {
-            bidResultDTO.setResult(BidResultStatus.SUCCESS);
-        }
-
-        BidResult bidResult = new BidResult(
-                bidResultDTO.getProduct()
-                ,bidResultDTO.getPaymentStatus()
-                ,bidResultDTO.getEndTime()
-                ,bidResultDTO.getEnrolledTime()
-                ,bidResultDTO.getCustomerId()
-                ,bidResultDTO.getResult()
-        );
-
-        return bidResultRepository.save(bidResult);
-    }
-
     @Override
     public void updateProductStatusAfterConfirm(String productId, String storageStatus) {
         Product product = productRepository.findById(productId)
@@ -189,5 +154,68 @@ public class BidServiceImpl implements BidService{
 //        product.setStatus(storageStatus); //TODO:: 여기 setter 추가 해도 되는지 물어보기
         productRepository.save(product);
     }
+
+    public void updateProductStatus() {
+        List<Product> products = bidResultRepository.findProductsByDeadlineBeforeAndStorageStatus(LocalDateTime.now(), StorageStatus.SELLING);
+        for (Product product : products) {
+            ProductDTO productDTO = new ProductDTO();
+
+            if (product.getBidCnt() == 0) {
+                productDTO.setStorageStatus(String.valueOf(StorageStatus.FAIL));
+            } else {
+                productDTO.setStorageStatus(String.valueOf(StorageStatus.SOLD));
+                // bid_cnt가 0이 아닌 경우 storage_status를 'SOLD'로 업데이트
+            }
+
+            bidResultRepository.updateProductStatus(product.getStorageStatus(), product.getProductId());
+        }
+    }
+
+
+
+    @Transactional
+    @Override
+    public void insertBidResultByProduct() {
+        List<Product> products = bidResultRepository.findProductsByDeadlineBeforeAndStorageStatus(LocalDateTime.now(), StorageStatus.valueOf("SELLING"));
+        for (Product product : products) {
+            Bid highestBid = bidResultRepository.findHighestBidByProductId(product.getProductId());
+
+            BidResultDTO bidResultDTO = new BidResultDTO();
+            bidResultDTO.setProductId(product.getProductId());
+            bidResultDTO.setPaymentStatus(0);
+            bidResultDTO.setEndTime(product.getDeadline());
+            bidResultDTO.setModTime(LocalDateTime.now());
+            bidResultDTO.setCompleteDate(product.getDeadline());
+            bidResultDTO.setEnrolledTime(LocalDateTime.now());
+
+            if (highestBid == null) {
+                bidResultDTO.setCustomerId(null);
+                bidResultDTO.setResult(String.valueOf(BidResultStatus.FAILURE));
+            } else {
+                bidResultDTO.setCustomerId(highestBid.getUser().getSerialNumber());
+                bidResultDTO.setResult(String.valueOf(BidResultStatus.SUCCESS));
+            }
+
+
+            BidResult bidResult = new BidResult(
+                    product
+                    , bidResultDTO.getPaymentStatus()
+                    , bidResultDTO.getEndTime()
+                    , bidResultDTO.getEnrolledTime()
+                    , bidResultDTO.getCustomerId()
+                    , bidResultDTO.getResult()
+            );
+
+            bidResultRepository.save(bidResult);
+        }
+    }
+
+    @Scheduled(fixedRate = 60000) // 1분마다 실행
+    public void updateProductStatusAndInsertBidResult() {
+        insertBidResultByProduct();
+        updateProductStatus();
+    }
+
+
 
 }
