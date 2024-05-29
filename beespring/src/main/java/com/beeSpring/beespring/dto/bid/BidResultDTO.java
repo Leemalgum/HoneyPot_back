@@ -16,9 +16,9 @@ import java.time.LocalDateTime;
 public class BidResultDTO {
     private Long bidResultId;
     private String orderId;
-    private Product product;
+    private String productId;
     private int paymentStatus;
-    private BidResultStatus result;
+    private String result;
     private LocalDateTime endTime;
     private LocalDateTime modTime;
     private LocalDateTime completeDate;

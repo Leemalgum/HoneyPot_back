@@ -1,9 +1,6 @@
 package com.beeSpring.beespring.repository.bid;
 
-import com.beeSpring.beespring.domain.bid.Bid;
-import com.beeSpring.beespring.domain.bid.BidResult;
-import com.beeSpring.beespring.domain.bid.BidResultStatus;
-import com.beeSpring.beespring.domain.bid.Product;
+import com.beeSpring.beespring.domain.bid.*;
 import com.beeSpring.beespring.domain.shipping.ShippingAddress;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
@@ -22,6 +19,10 @@ public interface BidResultRepository  extends JpaRepository<BidResult, Long> {
             "ORDER BY b.product.price DESC LIMIT 1")
     Bid findHighestBidByProductId(String productId);
 
+    @Query("SELECT p FROM Product p WHERE p.deadline <= :now AND p.storageStatus = :status")
+    List<Product> findProductsByDeadlineBeforeAndStorageStatus(LocalDateTime now, StorageStatus status);
 
 
+    @Query("UPDATE Product p SET p.storageStatus = :status where p.productId = :productId")
+    void updateProductStatus(StorageStatus status, String productId);
 }

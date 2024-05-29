@@ -20,7 +20,9 @@ public interface BidService {
     Product getProductEntityById(String productId);
 
     void increaseViewCount(String productId);
-    BidResult insertBidResultByProductIdAndSerialNumber(String productId);
 
     void updateProductStatusAfterConfirm(String productId, String storageStatus);
+
+    void insertBidResultByProduct();
+    void  updateProductStatus();
 }

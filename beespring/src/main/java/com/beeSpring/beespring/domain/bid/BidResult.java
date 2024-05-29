@@ -63,6 +63,7 @@ public class BidResult {
         return "BidResult{" +
                 "bidResultId=" + bidResultId +
                 ", orderId='" + payment.getMerchantUid() + '\'' +
+
                 ", product=" + product +
                 ", paymentStatus=" + paymentStatus +
                 ", result=" + result +
@@ -72,5 +73,17 @@ public class BidResult {
                 ", enrolledTime=" + enrolledTime +
                 ", customerId='" + customerId + '\'' +
                 '}';
+    }
+
+
+    public BidResult(Product product, int paymentStatus, LocalDateTime endTime, LocalDateTime enrolledTime, String customerId, String result) {
+
+        this.product = product;
+        this.paymentStatus = paymentStatus;
+        this.endTime = endTime;
+        this.enrolledTime = enrolledTime;
+        this.customerId = customerId;
+        this.result = BidResultStatus.valueOf(result);
+
     }
 }
