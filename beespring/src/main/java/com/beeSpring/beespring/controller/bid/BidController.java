@@ -76,12 +76,5 @@ public class BidController {
     public List<BidDTO> getMostRecentBidsByUser(@PathVariable String serialNumber) {
         return bidLogService.getMostRecentBidsByUser(serialNumber);
     }
-
-    @PostMapping(path = "/bid/result")
-    public ResponseEntity<BidResult> insertBidResult(@RequestParam String productId) {
-
-        BidResult bidResult = bidService.insertBidResultByProductIdAndSerialNumber(productId);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(bidResult);
-    }
+    
 }

@@ -38,6 +38,8 @@ public class UserDTO {
     private LocalDateTime refreshTokenExpiration;
     private String profileImage;
     private String gender;
+    private String userAccount;
+
 
 //    public UserDTO(String profileImage, String nickname, String tag1, String tag2, String tag3, Object o) {
 //    }

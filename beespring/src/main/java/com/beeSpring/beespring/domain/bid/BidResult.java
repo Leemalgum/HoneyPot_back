@@ -1,5 +1,6 @@
 package com.beeSpring.beespring.domain.bid;
 
+import com.beeSpring.beespring.domain.payment.Payment;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,8 +17,9 @@ public class BidResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bidResultId;
 
-    @Column(name = "order_id")
-    private String orderId;
+    @OneToOne
+    @JoinColumn(name = "order_id")
+    private Payment payment;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
@@ -60,7 +62,8 @@ public class BidResult {
     public String toString() {
         return "BidResult{" +
                 "bidResultId=" + bidResultId +
-                ", orderId='" + orderId + '\'' +
+                ", orderId='" + payment.getMerchantUid() + '\'' +
+
                 ", product=" + product +
                 ", paymentStatus=" + paymentStatus +
                 ", result=" + result +
@@ -70,5 +73,17 @@ public class BidResult {
                 ", enrolledTime=" + enrolledTime +
                 ", customerId='" + customerId + '\'' +
                 '}';
+    }
+
+
+    public BidResult(Product product, int paymentStatus, LocalDateTime endTime, LocalDateTime enrolledTime, String customerId, String result) {
+
+        this.product = product;
+        this.paymentStatus = paymentStatus;
+        this.endTime = endTime;
+        this.enrolledTime = enrolledTime;
+        this.customerId = customerId;
+        this.result = BidResultStatus.valueOf(result);
+
     }
 }

@@ -10,12 +10,15 @@ import com.beeSpring.beespring.domain.bid.Product;
 import com.beeSpring.beespring.domain.bid.StorageStatus;
 import com.beeSpring.beespring.domain.shipping.DeliveryStatus;
 import com.beeSpring.beespring.domain.user.User;
+import com.beeSpring.beespring.domain.user.UserIdol;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.mypage.AddressDTO;
 import com.beeSpring.beespring.dto.mypage.PaymentProductDTO;
 import com.beeSpring.beespring.dto.mypage.ProductWithSerialNumberDTO;
+import com.beeSpring.beespring.dto.mypage.UserProfileDTO;
 import com.beeSpring.beespring.dto.user.UserDTO;
 import com.beeSpring.beespring.repository.bid.ProductRepository;
+import com.beeSpring.beespring.repository.category.IdolRepository;
 import com.beeSpring.beespring.repository.user.UserIdolRepository;
 import com.beeSpring.beespring.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -30,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +43,7 @@ public class MypageServiceImpl implements MypageService {
     private final AmazonS3 s3Client;
     private final UserRepository userRepository;
     private final UserIdolRepository userIdolRepository;
+    private final IdolRepository idolRepository;
 
 
     @Override
@@ -46,14 +51,6 @@ public class MypageServiceImpl implements MypageService {
         List<Object[]> productList = productRepository.findBySerialNumber(serialNumber);
         List<ProductWithSerialNumberDTO> products = new ArrayList<>();
 
-        logger.info("Retrieved product list:");
-        for (Object[] objArray : productList) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (Object obj : objArray) {
-                stringBuilder.append(obj).append(", ");
-            }
-            logger.info(stringBuilder.toString());
-        }
         for (Object[] objArray : productList) {
             ProductWithSerialNumberDTO productDTO = ProductWithSerialNumberDTO.builder()
                     .productId((String) objArray[0])
@@ -77,7 +74,6 @@ public class MypageServiceImpl implements MypageService {
                 productDTO.setDeliveryStatus(DeliveryStatus.valueOf("NULL"));
             }
 
-//            logger.info("product: {}", productDTO);
             products.add(productDTO);
         }
 
@@ -167,15 +163,16 @@ public class MypageServiceImpl implements MypageService {
     public List<ProductWithSerialNumberDTO> getPurchaseListBySerialNumber(String serialNumber) {
         List<Object[]> productList = productRepository.findByCustomerId(serialNumber);
         List<ProductWithSerialNumberDTO> products = new ArrayList<>();
+        logger.info("-------getPurchaseListBySerialNumber-------");
 
-        logger.info("Retrieved product list:");
-        for (Object[] objArray : productList) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (Object obj : objArray) {
-                stringBuilder.append(obj).append(", ");
-            }
-            logger.info(stringBuilder.toString());
-        }
+//        logger.info("Retrieved product list:");
+//        for (Object[] objArray : productList) {
+//            StringBuilder stringBuilder = new StringBuilder();
+//            for (Object obj : objArray) {
+//                stringBuilder.append(obj).append(", ");
+//            }
+//            logger.info(stringBuilder.toString());
+//        }
         for (Object[] objArray : productList) {
             ProductWithSerialNumberDTO productDTO = ProductWithSerialNumberDTO.builder()
                     .productId((String) objArray[0])
@@ -209,34 +206,54 @@ public class MypageServiceImpl implements MypageService {
 
     //프로필 파트
     @Override
-    public UserDTO getProfile(String serialNumber) {
+    public UserProfileDTO getProfile(String serialNumber) {
         User user = userRepository.findBySerialNumber(serialNumber)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserDTO(
-                user.getSerialNumber(),
-                user.getUserId(),
-                user.getProvider(),
-                user.getRoleId(),
-                user.getPassword(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getNickname(),
-                user.getEmail(),
-                user.getMobileNumber(),
-                user.getRegistrationDate(),
-                user.getBirthdate(),
-                user.getReportedCnt(),
-                user.getState(),
-                user.getReason(),
-                user.getSuspended(),
-                user.getModDate(),
-                user.getAccessToken(),
-                user.getRefreshToken(),
-                user.getAccessTokenExpiration(),
-                user.getRefreshTokenExpiration(),
-                user.getProfileImage(),
-                user.getGender()
-        );
+
+        List<String> idolNames = userRepository.findIdolNamesByUserSerialNumber(serialNumber);
+
+        return UserProfileDTO.builder()
+                .profileImage(user.getProfileImage())
+                .nickname(user.getNickname())
+                .userAccount(user.getUserAccount())
+                .serialNumber(user.getSerialNumber())
+                .idolNames(idolNames)
+                .build();
+
+    }
+
+    @Override
+    @Transactional
+    public void updateProfile(String serialNumber, UserProfileDTO userProfileDTO, MultipartFile profileImageFile) throws IOException {
+        User user = userRepository.findBySerialNumber(serialNumber)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        logger.info(String.valueOf(user));
+        user.setNickname(userProfileDTO.getNickname());
+        user.setUserAccount(userProfileDTO.getUserAccount());
+        if (profileImageFile != null && !profileImageFile.isEmpty()) {
+            String profileImageUrl = storeImage(profileImageFile);
+            user.setProfileImage(profileImageUrl);
+        }
+
+        userRepository.save(user);
+
+        // 업데이트된 아이돌 리스트를 처리
+        userIdolRepository.deleteByUser(user);
+        List<String> idolNames = userProfileDTO.getIdolNames();
+        if (idolNames != null && !idolNames.isEmpty()) {
+            for (String idolName : idolNames) {
+                Integer idolId = idolRepository.findIdByName(idolName);
+                if (idolId != null) {
+//                    userIdolRepository.insertUserIdol(serialNumber, idolId);
+                    UserIdol userIdol = UserIdol.builder()
+                            .user(user)
+                            .idol(idolRepository.getReferenceById(idolId))
+                            .build();
+                    userIdolRepository.save(userIdol);
+                }
+            }
+        }
     }
 
     @Override

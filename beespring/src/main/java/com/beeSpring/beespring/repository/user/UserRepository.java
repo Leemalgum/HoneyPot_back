@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,9 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByFirstNameAndMobileNumber(String firstName, String mobileNumber);
 
+    @Query("SELECT i.idolName FROM UserIdol ui JOIN ui.idol i WHERE ui.user.serialNumber = :serialNumber")
+    List<String> findIdolNamesByUserSerialNumber(@Param("serialNumber") String serialNumber);
+
     @Query("SELECT u FROM User u WHERE u.userId = :userId AND u.mobileNumber = :mobileNumber AND u.email = :email")
     Optional<User> findByUserIdAndMobileNumberAndEmail(@Param("userId") String userId, @Param("mobileNumber") String mobileNumber, @Param("email") String email);
 
@@ -48,4 +52,5 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Modifying
     @Query("UPDATE User u SET u.state = :state WHERE u.userId = :userId")
     void updateUserState(@Param("userId") String userId, @Param("state") State state);
+
 }

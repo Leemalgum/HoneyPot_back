@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface EmailService {
 
-    List<Object[]> sendBidClosingReminderEmail(String productId);
+//    List<Object[]> sendBidClosingReminderEmail(String productId);
+    void sendBidClosingReminderEmail();
     MimeMessage createMail(String nickname, String email, String productName, String productId);
     MimeMessage sendPasswordResetEmail(String to, String resetUrl);
     void sendReceiptRejectionEmail(String to, DeclineReasonDTO declineReasonDTO);

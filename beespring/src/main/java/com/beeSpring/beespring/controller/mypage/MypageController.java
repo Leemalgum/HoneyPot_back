@@ -4,6 +4,7 @@ import com.beeSpring.beespring.domain.shipping.ShippingAddress;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.mypage.PaymentProductDTO;
 import com.beeSpring.beespring.dto.mypage.ProductWithSerialNumberDTO;
+import com.beeSpring.beespring.dto.mypage.UserProfileDTO;
 import com.beeSpring.beespring.dto.shipping.ShippingAddressDTO;
 import com.beeSpring.beespring.dto.user.UserDTO;
 import com.beeSpring.beespring.service.mypage.MypageService;
@@ -61,11 +62,16 @@ public class MypageController {
     @GetMapping(path = "/mypage/purchaseList/{serialNumber}")
     public ResponseEntity<List<ProductWithSerialNumberDTO>> getPurchaseList(@PathVariable("serialNumber") String serialNumber) {
         // serialNumber를 이용하여 ProductService를 통해 해당 serialNumber에 해당하는 상품 목록을 가져옵니다.
-        List<ProductWithSerialNumberDTO> productList = mypageService.getPurchaseListBySerialNumber(serialNumber);
-        if (!productList.isEmpty()) {
-            return new ResponseEntity<>(productList, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            List<ProductWithSerialNumberDTO> productList = mypageService.getPurchaseListBySerialNumber(serialNumber);
+            if (!productList.isEmpty()) {
+                return new ResponseEntity<>(productList, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            log.error("An error occurred while fetching the purchase list", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -118,7 +124,7 @@ public class MypageController {
             @RequestParam("productInfo") String productInfo,
             @RequestParam("auctionDays") int auctionDays,
             @RequestParam("auctionHours") int auctionHours,
-
+            @RequestParam("serialNumber") String serialNumber,
             @RequestParam("categoryName") int categoryName,
             @RequestParam("tagName") int tagName,
             @RequestParam("image1") MultipartFile image1,
@@ -139,42 +145,25 @@ public class MypageController {
             productDTO.setBuyNow(buyNow);
             productDTO.setStartPrice(startPrice);
             productDTO.setProductInfo(productInfo);
-
-            log.info("Received request to register product: {}", productDTO);
-            log.info("Received images: image1={}, image2={}, image3={}, image4={}, image5={}",
-                    image1.getOriginalFilename(), image2.getOriginalFilename(),
-                    image3 != null ? image3.getOriginalFilename() : "null",
-                    image4 != null ? image4.getOriginalFilename() : "null",
-                    image5 != null ? image5.getOriginalFilename() : "null");
-            log.info("auctionDays={}, auctionHours={}, categoryName={}, tagName={}", auctionDays, auctionHours, categoryName, tagName);
+            productDTO.setPrice(startPrice);
 
             if (image1 != null && !image1.isEmpty()) {
-                log.info("image1 업로드 시작");
                 productDTO.setImage1(mypageService.storeImage(image1));
-                log.info("image1 업로드 완료");
             }
             if (image2 != null && !image2.isEmpty()) {
-                log.info("image2 업로드 시작");
                 productDTO.setImage2(mypageService.storeImage(image2));
-                log.info("image2 업로드 완료");
             }
             if (image3 != null && !image3.isEmpty()) {
-                log.info("image3 업로드 시작");
                 productDTO.setImage3(mypageService.storeImage(image3));
-                log.info("image3 업로드 완료");
             }
             if (image4 != null && !image4.isEmpty()) {
-                log.info("image4 업로드 시작");
                 productDTO.setImage4(mypageService.storeImage(image4));
-                log.info("image4 업로드 완료");
             }
             if (image5 != null && !image5.isEmpty()) {
-                log.info("image5 업로드 시작");
                 productDTO.setImage5(mypageService.storeImage(image5));
-                log.info("image5 업로드 완료");
             }
 
-            productDTO.setSerialNumber("123456789");
+            productDTO.setSerialNumber(serialNumber);
             productDTO.setPtypeId(categoryName);
             productDTO.setIdolId(tagName);
             productDTO.setTimeLimit(auctionDays * 24 + auctionHours);
@@ -183,7 +172,6 @@ public class MypageController {
             productDTO.setRequestTime(LocalDateTime.now());
             productDTO.setRegistrationDate(LocalDateTime.now());
 
-            log.info("registerProduct 메서드 끝 - ProductDTO: {}", productDTO);
 
             mypageService.registerProduct(productDTO);
             return ResponseEntity.ok("Product registered successfully.");
@@ -233,22 +221,35 @@ public class MypageController {
 
     //프로필 수정 파트
     @GetMapping("/mypage-profile/{serialNumber}")
-    public ResponseEntity<UserDTO> getProfile(@PathVariable String serialNumber) {
-        UserDTO profileDTO = mypageService.getProfile(serialNumber);
+    public ResponseEntity<UserProfileDTO> getProfile(@PathVariable String serialNumber) {
+        UserProfileDTO profileDTO = mypageService.getProfile(serialNumber);
         return ResponseEntity.ok(profileDTO);
     }
 
-    @PostMapping(value = "mypage-profile/{serialNumber}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> saveProfile(
+    @PutMapping("/mypage-profile/{serialNumber}")
+    public ResponseEntity<Void> updateProfile(
             @PathVariable String serialNumber,
-            @RequestPart("userDTO") UserDTO userDTO,
+            @RequestPart("userDTO") UserProfileDTO userProfileDTO,
             @RequestPart(value = "profileImageFile", required = false) MultipartFile profileImageFile) {
         try {
-            mypageService.saveProfile(serialNumber, userDTO, profileImageFile);
-            return ResponseEntity.ok("Profile updated successfully");
+            mypageService.updateProfile(serialNumber, userProfileDTO, profileImageFile);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (IOException e) {
-            return ResponseEntity.status(500).body("Failed to update profile: " + e.getMessage());
+            log.error("Error updating profile", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+//    @PostMapping(value = "mypage-profile/{serialNumber}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+//    public ResponseEntity<String> saveProfile(
+//            @PathVariable String serialNumber,
+//            @RequestPart("userDTO") UserDTO userDTO,
+//            @RequestPart(value = "profileImageFile", required = false) MultipartFile profileImageFile) {
+//        try {
+//            mypageService.saveProfile(serialNumber, userDTO, profileImageFile);
+//            return ResponseEntity.ok("Profile updated successfully");
+//        } catch (IOException e) {
+//            return ResponseEntity.status(500).body("Failed to update profile: " + e.getMessage());
+//        }
+//    }
 
 }

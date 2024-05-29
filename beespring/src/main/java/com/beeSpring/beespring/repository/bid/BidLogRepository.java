@@ -14,21 +14,29 @@ import java.util.List;
 public interface BidLogRepository extends JpaRepository<Bid, Integer> {
     @Query("SELECT MAX(b.price) FROM Bid b WHERE b.product = :product")
     Integer findMaxPriceByProduct(Product product);
+
     List<Bid> findByProduct(Product product);
-    @Query("SELECT b, b.user.nickname FROM Bid b " +
+
+    //    @Query("SELECT b, b.user.nickname FROM Bid b " +
+//            "WHERE b.user.serialNumber = :serialNumber " +
+//            "AND b.bidTime = (SELECT MAX(b2.bidTime) " +
+//            "FROM Bid b2 WHERE b2.product = b.product " +
+//            "AND b2.user.serialNumber = :serialNumber)")
+    @Query("SELECT b, seller.nickname FROM Bid b " +
+            "JOIN b.product p " +
+            "JOIN User seller ON p.user.serialNumber = seller.serialNumber " +
             "WHERE b.user.serialNumber = :serialNumber " +
             "AND b.bidTime = (SELECT MAX(b2.bidTime) " +
             "FROM Bid b2 WHERE b2.product = b.product " +
             "AND b2.user.serialNumber = :serialNumber)")
-    List<Bid> findMostRecentBidsByUser(String serialNumber);
+    List<Object[]> findMostRecentBidsByUser(String serialNumber);
 
-    @Query("SELECT u.nickname, u.email, p.productName " +
+    @Query("SELECT u.nickname, u.email, p.productName, p.id " +
             "FROM Bid b " +
             "JOIN b.user u " +
             "JOIN b.product p " +
             "WHERE p.deadline BETWEEN :now AND :oneHourLater")
-    List<Object[]> findUsersWithProductDeadlineWithinAnHour(@Param("now") LocalDateTime now,
-                                                            @Param("oneHourLater") LocalDateTime oneHourLater);
+    List<Object[]> findUsersWithProductDeadlineWithinAnHour(@Param("now") LocalDateTime now, @Param("oneHourLater") LocalDateTime oneHourLater);
 
     @Query("SELECT COUNT(b) FROM Bid b WHERE b.bidTime >= :startOfDay AND b.bidTime < :endOfDay")
     int countBidsToday(LocalDateTime startOfDay, LocalDateTime endOfDay);
