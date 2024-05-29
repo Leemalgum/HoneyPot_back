@@ -15,6 +15,6 @@ public class UserProfileDTO {
     private String profileImage;
     private String nickname;
     private String userAccount;
-    private String userId;
+    private String serialNumber;
     private List<String> idolNames;
 }

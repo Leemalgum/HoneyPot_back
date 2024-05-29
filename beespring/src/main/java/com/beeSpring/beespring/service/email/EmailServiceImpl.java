@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -59,26 +60,27 @@ public class EmailServiceImpl implements EmailService {
     /**
      * 경매 종료 시간까지 1시간 남은 상품들에 입찰을 한 사용자 정보를 가져와서 메일 전송
      */
-//    @Scheduled(fixedRate = 3600000)  // Schedules the method to run every hour
-    public List<Object[]> sendBidClosingReminderEmail(String productId) {
+//    @Scheduled(cron = "0 0/1 * * * *")
+//    public List<Object[]> sendBidClosingReminderEmail(String productId)
+    public void sendBidClosingReminderEmail()
+    {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime oneHourLater = now.plusHours(1);
 
         List<Object[]> usersWithProductDeadline = bidLogRepository.findUsersWithProductDeadlineWithinAnHour(now, oneHourLater);
 
-        logger.info("Query Result: " + usersWithProductDeadline.size() + " records found");
-
         for (Object[] userData : usersWithProductDeadline) {
             String nickname = (String) userData[0];
             String email = (String) userData[1];
             String productName = (String) userData[2];
+            String productId = (String) userData[3];
 
-            logger.info("Nickname: {}, Email: {}, Product Name: {}, Product Image: {}", nickname, email, productName);
+            logger.info("Nickname: {}, Email: {}, Product Name: {}, Product Id: {}", nickname, email, productName, productId);
 
             MimeMessage message = createMail(nickname, email, productName,  productId);
             javaMailSender.send(message);
         }
-        return usersWithProductDeadline;
+//        return usersWithProductDeadline;
     }
 
 }

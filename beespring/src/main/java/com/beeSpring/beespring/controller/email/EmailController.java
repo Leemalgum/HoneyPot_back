@@ -18,7 +18,8 @@ public class EmailController {
 
     @PostMapping("/notifyEndingSoon")
     public void notifyAuctionEndingSoon(@RequestParam String productId) {
-        emailService.sendBidClosingReminderEmail(productId);
+//        emailService.sendBidClosingReminderEmail(productId);
+        emailService.sendBidClosingReminderEmail();
 
     }
 }

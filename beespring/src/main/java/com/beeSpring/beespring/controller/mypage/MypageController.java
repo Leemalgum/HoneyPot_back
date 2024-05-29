@@ -124,7 +124,7 @@ public class MypageController {
             @RequestParam("productInfo") String productInfo,
             @RequestParam("auctionDays") int auctionDays,
             @RequestParam("auctionHours") int auctionHours,
-
+            @RequestParam("serialNumber") String serialNumber,
             @RequestParam("categoryName") int categoryName,
             @RequestParam("tagName") int tagName,
             @RequestParam("image1") MultipartFile image1,
@@ -145,42 +145,25 @@ public class MypageController {
             productDTO.setBuyNow(buyNow);
             productDTO.setStartPrice(startPrice);
             productDTO.setProductInfo(productInfo);
-
-            log.info("Received request to register product: {}", productDTO);
-            log.info("Received images: image1={}, image2={}, image3={}, image4={}, image5={}",
-                    image1.getOriginalFilename(), image2.getOriginalFilename(),
-                    image3 != null ? image3.getOriginalFilename() : "null",
-                    image4 != null ? image4.getOriginalFilename() : "null",
-                    image5 != null ? image5.getOriginalFilename() : "null");
-            log.info("auctionDays={}, auctionHours={}, categoryName={}, tagName={}", auctionDays, auctionHours, categoryName, tagName);
+            productDTO.setPrice(startPrice);
 
             if (image1 != null && !image1.isEmpty()) {
-                log.info("image1 업로드 시작");
                 productDTO.setImage1(mypageService.storeImage(image1));
-                log.info("image1 업로드 완료");
             }
             if (image2 != null && !image2.isEmpty()) {
-                log.info("image2 업로드 시작");
                 productDTO.setImage2(mypageService.storeImage(image2));
-                log.info("image2 업로드 완료");
             }
             if (image3 != null && !image3.isEmpty()) {
-                log.info("image3 업로드 시작");
                 productDTO.setImage3(mypageService.storeImage(image3));
-                log.info("image3 업로드 완료");
             }
             if (image4 != null && !image4.isEmpty()) {
-                log.info("image4 업로드 시작");
                 productDTO.setImage4(mypageService.storeImage(image4));
-                log.info("image4 업로드 완료");
             }
             if (image5 != null && !image5.isEmpty()) {
-                log.info("image5 업로드 시작");
                 productDTO.setImage5(mypageService.storeImage(image5));
-                log.info("image5 업로드 완료");
             }
 
-            productDTO.setSerialNumber("123456789");
+            productDTO.setSerialNumber(serialNumber);
             productDTO.setPtypeId(categoryName);
             productDTO.setIdolId(tagName);
             productDTO.setTimeLimit(auctionDays * 24 + auctionHours);
@@ -189,7 +172,6 @@ public class MypageController {
             productDTO.setRequestTime(LocalDateTime.now());
             productDTO.setRegistrationDate(LocalDateTime.now());
 
-            log.info("registerProduct 메서드 끝 - ProductDTO: {}", productDTO);
 
             mypageService.registerProduct(productDTO);
             return ResponseEntity.ok("Product registered successfully.");
