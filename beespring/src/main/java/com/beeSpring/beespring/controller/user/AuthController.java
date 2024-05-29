@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.beeSpring.beespring.domain.category.Idol;
+import com.beeSpring.beespring.domain.user.State;
 import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.domain.user.UserIdol;
 import com.beeSpring.beespring.dto.shipping.ShippingAddressDTO;
@@ -73,7 +74,6 @@ public class AuthController {
     private final TransactionTemplate transactionTemplate;
     private final ShippingServiceImpl shippingService;
     private final PasswordResetTokenServiceImpl passwordResetTokenService;
-
 
     @Transactional
     @PostMapping("/login")
@@ -171,6 +171,7 @@ public class AuthController {
             user.setMobileNumber(mobileNumber);
             user.setEmail(email);
             user.setRegistrationDate(LocalDateTime.now());
+            user.setState(State.ACTIVE);
             if (birthdate != null && !birthdate.isEmpty()) {
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
