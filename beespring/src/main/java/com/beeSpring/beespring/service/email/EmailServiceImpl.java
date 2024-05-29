@@ -1,5 +1,7 @@
 package com.beeSpring.beespring.service.email;
 
+import com.beeSpring.beespring.dto.admin.DeclineReasonDTO;
+import com.beeSpring.beespring.dto.bid.PendingProductsDTO;
 import com.beeSpring.beespring.repository.bid.BidLogRepository;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -106,4 +108,66 @@ public class EmailServiceImpl implements EmailService {
         return message;
     }
 
+    @Override
+    public void sendReceiptRejectionEmail(String to, DeclineReasonDTO declineReasonDTO) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(senderEmail);
+            helper.setTo(to);
+            helper.setSubject("꿀단지에서 상품 입고 신청 결과를 안내드립니다.");
+
+            String body = "<h1>안녕하세요, 고객님이 신청해주신 상품을 아쉽게도 입고할 수 없음을 안내드립니다.</h1>";
+            body += "<p>사유는 아래와 같습니다 : " + declineReasonDTO.getDeclineReason() + "</p>";
+            body += "<p>다음에는 함께 하길 기대하겠습니다. 감사합니다.<br><br>팀 봄bee (beeSpring) </p>";
+
+            helper.setText(body, true); // true를 설정하여 HTML을 사용하도록 함
+
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            logger.error("Error sending receipt rejection email", e);
+        }
+    }
+
+    @Override
+    public void sendReceiptApprovementEmail(String to, PendingProductsDTO pendingProductsDTO) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(senderEmail);
+            helper.setTo(to);
+            helper.setSubject("꿀단지에서 상품 입고 신청 결과를 안내드립니다.");
+
+            String body = "<h1>안녕하세요, 꿀단지에서 상품 입고가 승인되었음을 안내드립니다.</h1>";
+            body += "<p>다음 주소로 입고 신청을 하신 상품을 보내주세요 : " + "꿀벌특별시 아카시아구 조청419길 11, 벌집빌딩 1층(12345)" + "</p>";
+            body += "<p>감사합니다.<br><br>팀 봄bee (beeSpring) </p>";
+
+            helper.setText(body, true); // true를 설정하여 HTML을 사용하도록 함
+
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            logger.error("Error sending receipt approvement email", e);
+        }
+    }
+
+    @Override
+    public void sendRegisterApprovementEmail(String to, PendingProductsDTO pendingProductsDTO) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(senderEmail);
+            helper.setTo(to);
+            helper.setSubject("꿀단지에 경매 상품이 등록되었습니다.");
+
+            String body = "<h1>안녕하세요, 꿀단지에서 상품이 경매로 등록되었음을 안내드립니다.</h1>";
+            body += "<p>아래 주소에서 상품을 확인하세요 : <a href='http://localhost:3000/bid-details/" + pendingProductsDTO.getProductId() + "'>경매 상품 확인</a></p>";
+            body += "<p>감사합니다.<br><br>팀 봄bee (beeSpring) </p>";
+
+            helper.setText(body, true); // true를 설정하여 HTML을 사용하도록 함
+
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            logger.error("Error sending register approvement email", e);
+        }
+    }
 }
