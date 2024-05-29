@@ -11,6 +11,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Log4j2
 public class PaymentServiceImpl implements PaymentService {
@@ -34,7 +37,31 @@ public class PaymentServiceImpl implements PaymentService {
         // paymentGateway.processPayment(payment);
     }
 
+    @Override
+    public List<PaymentDTO> findAllPayment() {
+        List<Payment> paymentList = paymentRepository.findAll();
+        List<PaymentDTO> dtoList = new ArrayList<>();
 
+        paymentList.stream().forEach(payment -> {
+            PaymentDTO paymentDTO = new PaymentDTO().builder()
+                    .merchantUid(payment.getMerchantUid())
+                    .serialNumber(payment.getSerialNumber())
+                    .pg(payment.getPg())
+                    .payMethod(payment.getPayMethod())
+                    .escrow(payment.isEscrow())
+                    .name(payment.getName())
+                    .amount(payment.getAmount())
+                    .buyerName(payment.getBuyerName())
+                    .dateAdded(payment.getDateAdded())
+                    .status(payment.getStatus())
+                    .success(payment.isSuccess())
+                    .receiptUrl(payment.getReceiptUrl())
+                    .productId(payment.getProductId())
+                    .build();
+            dtoList.add(paymentDTO);
+        });
+        return dtoList;
+    }
 
 
     @Transactional

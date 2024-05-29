@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/payment")
 @Log4j2
@@ -73,6 +75,20 @@ public class PaymentController {
             return ResponseEntity.ok(paymentDTO);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/admin/payments/list")
+    public ResponseEntity<List<PaymentDTO>> getAllPayment() {
+
+        List<PaymentDTO> paymentList = paymentServiceImpl.findAllPayment();
+
+        if (paymentList != null) {
+            // 상품 데이터가 존재할 경우 200 OK 응답과 함께 데이터를 반환합니다.
+            return new ResponseEntity<>(paymentList, HttpStatus.OK);
+        } else {
+            // 상품 데이터가 존재하지 않을 경우 404 Not Found 응답을 반환합니다.
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 

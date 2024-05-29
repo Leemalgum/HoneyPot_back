@@ -18,7 +18,7 @@ public class PaymentDTO {
     private String pg;
     private String payMethod;
     private boolean escrow;
-    private String name;
+    private String name; // 상품이름
     private int amount;
     private String buyerName;
     private LocalDate dateAdded;
@@ -27,4 +27,7 @@ public class PaymentDTO {
     private String receiptUrl;
     private String productId;
 
+    public PaymentDTO() {
+
+    }
 }

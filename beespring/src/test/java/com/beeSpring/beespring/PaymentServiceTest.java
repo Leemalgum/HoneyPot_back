@@ -9,6 +9,7 @@ import com.beeSpring.beespring.repository.payment.PaymentRepository;
 import com.beeSpring.beespring.service.bid.BidLogServiceImpl;
 import com.beeSpring.beespring.service.payment.PaymentServiceImpl;
 import jakarta.transaction.Transactional;
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-
+@Log4j2
 @SpringBootTest
 public class PaymentServiceTest {
     private static final Logger logger = LoggerFactory.getLogger(PaymentServiceTest.class);
@@ -63,5 +64,12 @@ public class PaymentServiceTest {
         // when
         paymentService.insertPayment(payment);
 
+    }
+
+    @Test
+    @Transactional
+    void testListAllPayment() throws InterruptedException, ExecutionException {
+        paymentService.findAllPayment();
+        log.info(paymentService.findAllPayment());
     }
 }
