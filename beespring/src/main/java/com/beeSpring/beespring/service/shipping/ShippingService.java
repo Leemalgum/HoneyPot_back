@@ -6,6 +6,7 @@ import com.beeSpring.beespring.dto.shipping.ShippingAddressDTO;
 import java.util.List;
 import java.util.Optional;
 
+
 public interface ShippingService {
     Optional<ShippingAddress> getAddressById(Long id);
 
@@ -14,4 +15,8 @@ public interface ShippingService {
     void deleteAddress(Long id);
 
     List<ShippingAddress> getAddressesBySerialNumber(String serialNumber);
+
+    void updateOrderConfirm(String productId);
+
+    boolean getOrderConfirm(String productId);
 }
