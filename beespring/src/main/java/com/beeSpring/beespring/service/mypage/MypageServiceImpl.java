@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,14 +51,6 @@ public class MypageServiceImpl implements MypageService {
         List<Object[]> productList = productRepository.findBySerialNumber(serialNumber);
         List<ProductWithSerialNumberDTO> products = new ArrayList<>();
 
-        logger.info("Retrieved product list:");
-        for (Object[] objArray : productList) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (Object obj : objArray) {
-                stringBuilder.append(obj).append(", ");
-            }
-            logger.info(stringBuilder.toString());
-        }
         for (Object[] objArray : productList) {
             ProductWithSerialNumberDTO productDTO = ProductWithSerialNumberDTO.builder()
                     .productId((String) objArray[0])
@@ -81,7 +74,6 @@ public class MypageServiceImpl implements MypageService {
                 productDTO.setDeliveryStatus(DeliveryStatus.valueOf("NULL"));
             }
 
-//            logger.info("product: {}", productDTO);
             products.add(productDTO);
         }
 
@@ -224,7 +216,7 @@ public class MypageServiceImpl implements MypageService {
                 .profileImage(user.getProfileImage())
                 .nickname(user.getNickname())
                 .userAccount(user.getUserAccount())
-                .userId(user.getUserId())
+                .serialNumber(user.getSerialNumber())
                 .idolNames(idolNames)
                 .build();
 
