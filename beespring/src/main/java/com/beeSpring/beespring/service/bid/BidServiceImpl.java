@@ -56,7 +56,7 @@ public class BidServiceImpl implements BidService{
             productDTO.setPrice(product.getPrice());
             productDTO.setPriceUnit(product.getPriceUnit());
             productDTO.setBuyNow(product.getBuyNow());
-            //productDTO.setTimeLimit(product.getTimeLimit());
+            productDTO.setTimeLimit(product.getTimeLimit());
             productDTO.setView(product.getView());
             productDTO.setStartPrice(product.getStartPrice());
             productDTO.setRegistrationDate(product.getRegistrationDate());
@@ -180,6 +180,14 @@ public class BidServiceImpl implements BidService{
         );
 
         return bidResultRepository.save(bidResult);
+    }
+
+    @Override
+    public void updateProductStatusAfterConfirm(String productId, String storageStatus) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+//        product.setStatus(storageStatus); //TODO:: 여기 setter 추가 해도 되는지 물어보기
+        productRepository.save(product);
     }
 
 }

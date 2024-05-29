@@ -21,4 +21,7 @@ public interface BidResultRepository  extends JpaRepository<BidResult, Long> {
             "WHERE b.product.productId = :productId " +
             "ORDER BY b.product.price DESC LIMIT 1")
     Bid findHighestBidByProductId(String productId);
+
+
+
 }
