@@ -6,11 +6,10 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class ProductWithSerialNumberDTO {
     private String productId;
     private Integer paymentStatus;
