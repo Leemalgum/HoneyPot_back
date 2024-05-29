@@ -41,6 +41,7 @@ public class Payment {
     @Column(name = "buyerName")
     private String buyerName;
 
+
     @Column(name = "date_added")
     private LocalDate dateAdded;
 
@@ -75,3 +76,4 @@ public class Payment {
 
 
 }
+

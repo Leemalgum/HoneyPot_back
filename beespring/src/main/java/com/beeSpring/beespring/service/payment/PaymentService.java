@@ -8,4 +8,5 @@ public interface PaymentService {
     public void processPayment(PaymentDTO paymentDTO);
 
     public ProductWithSerialNumberDTO getPaymentStatus(String productId);
+
 }

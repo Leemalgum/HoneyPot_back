@@ -29,11 +29,11 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = new Payment(paymentDTO);
         log.info("Payment: " + payment.toString());
         paymentRepository.save(payment);
-        // TODO:: 배송이 완료가 되고 구매확정을 누루면 SOLD 인건가? DB 에 A02 의 값이 SOLD로 되어 있어서
         // Process the payment using Payment
         // Example:
         // paymentGateway.processPayment(payment);
     }
+
 
 
 
@@ -50,5 +50,6 @@ public class PaymentServiceImpl implements PaymentService {
 //        return paymentRepository.getPaymentStatus(productId);
         return null;
     }
+
 
 }
