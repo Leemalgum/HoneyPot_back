@@ -1,5 +1,6 @@
 package com.beeSpring.beespring.service.bid;
 
+import com.beeSpring.beespring.controller.user.OAuth2Controller;
 import com.beeSpring.beespring.domain.bid.Bid;
 import com.beeSpring.beespring.domain.bid.Product;
 import com.beeSpring.beespring.domain.user.User;
@@ -7,6 +8,8 @@ import com.beeSpring.beespring.dto.bid.BidDTO;
 import com.beeSpring.beespring.repository.bid.BidLogRepository;
 import com.beeSpring.beespring.repository.bid.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class BidLogServiceImpl implements BidLogService {
-
+    private static final Logger logger = LoggerFactory.getLogger(BidLogServiceImpl.class);
 
     private final BidLogRepository bidLogRepository;
     private final ExecutorService executorService;
@@ -62,8 +65,12 @@ public class BidLogServiceImpl implements BidLogService {
 
     @Override
     public List<BidDTO> getMostRecentBidsByUser(String serialNumber) {
-        return bidLogRepository.findMostRecentBidsByUser(serialNumber).stream()
-                .map(bid -> {
+        List<Object[]> results = bidLogRepository.findMostRecentBidsByUser(serialNumber);
+        List<BidDTO> bidDTOs = results.stream()
+                .map(result -> {
+                    Bid bid = (Bid) result[0];
+                    String sellerNickname = (String) result[1];
+
                     BidDTO bidDTO = new BidDTO();
                     bidDTO.setProductId(bid.getProduct().getProductId());
                     bidDTO.setSellerId(bid.getProduct().getUser().getUserId());
@@ -73,10 +80,16 @@ public class BidLogServiceImpl implements BidLogService {
                     bidDTO.setImage1(bid.getProduct().getImage1());
                     bidDTO.setDeadline(bid.getProduct().getDeadline());
                     bidDTO.setCurrentPrice(bid.getProduct().getPrice());
-                    bidDTO.setNickName(bid.getUser().getNickname());
+                    bidDTO.setNickName(sellerNickname); // Use seller nickname
+
+                    // Log the BidDTO
+                    logger.info("BidDTO: {}", bidDTO);
+
                     return bidDTO;
                 })
                 .collect(Collectors.toList());
+
+        return bidDTOs;
     }
 
 

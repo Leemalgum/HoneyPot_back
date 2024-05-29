@@ -44,13 +44,20 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 //            "JOIN br.product p " +
 //            "JOIN p.user u " +
 //            "WHERE u.serialNumber = :serialNumber AND br.customerId = :serialNumber and sh.bidResultId = br.bidResultId")
-    @Query("SELECT p.productId, br.paymentStatus, br.completeDate, sh.deliveryStatus, u.serialNumber, " +
-            "p.productName, p.image1, p.priceUnit, p.startPrice, p.bidCnt, u.nickname " +
+//    @Query("SELECT p.productId, br.paymentStatus, br.completeDate, sh.deliveryStatus, u.serialNumber, " +
+//            "p.productName, p.image1, p.priceUnit, p.startPrice, p.bidCnt, u.nickname " +
+//            "FROM BidResult br " +
+//            "JOIN br.product p " +
+//            "JOIN User u ON br.customerId = u.serialNumber " +
+//            "LEFT JOIN Shipping sh ON sh.bidResult = br " +
+//            "WHERE u.serialNumber = :serialNumber AND br.customerId = :serialNumber")
+    @Query("SELECT p.productId, br.paymentStatus, br.completeDate, sh.deliveryStatus, p.user.serialNumber, " +
+            "p.productName, p.image1, p.priceUnit, p.startPrice, p.bidCnt, seller.nickname " +
             "FROM BidResult br " +
             "JOIN br.product p " +
-            "JOIN User u ON br.customerId = u.serialNumber " +
+            "JOIN User seller ON p.user.serialNumber = seller.serialNumber " +
             "LEFT JOIN Shipping sh ON sh.bidResult = br " +
-            "WHERE u.serialNumber = :serialNumber AND br.customerId = :serialNumber")
+            "WHERE br.customerId = :serialNumber")
     List<Object[]> findByCustomerId(String serialNumber);
 
     @Query("SELECT p.productId, u.serialNumber, p.productName, p.priceUnit, p.startPrice, p.bidCnt, " +
