@@ -36,18 +36,18 @@ public class AdminController {
     private final TransactionTemplate transactionTemplate;
 
     @GetMapping(path = "/pending-processing-products")
-    public List<PendingProductsDTO> getAllPendingAndProcessingWithIdolNameAndPtypeName() {
+    public List<PendingProductsDTO> getAllPendingAndProcessingWithIdolNameAndPtypeName(@RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
         return bidService.getAllPendingAndProcessingWithIdolNameAndPtypeName();
     }
 
     @GetMapping("/get-users")
-    public ResponseEntity<List<ManageUserProjection>> getAllUsers() {
+    public ResponseEntity<List<ManageUserProjection>> getAllUsers(@RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
         List<ManageUserProjection> users = userRepository.findAllUsersAsDTO();
         return ResponseEntity.ok(users);
     }
 
     @PostMapping("/approve-product")
-    public ResponseEntity<String> approveProduct(@RequestBody PendingProductsDTO pendingProductsDTO) {
+    public ResponseEntity<String> approveProduct(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestBody PendingProductsDTO pendingProductsDTO) {
         System.out.println("시리얼 넘버" + pendingProductsDTO.getSerialNumber());
         System.out.println("상태 : " + pendingProductsDTO.getStorageStatus());
         System.out.println("상품 아이디 : " + pendingProductsDTO.getProductId());
@@ -75,7 +75,7 @@ public class AdminController {
 
     @Transactional
     @PostMapping("/final-approve-product")
-    public ResponseEntity<String> finalApproveProduct(@RequestBody PendingProductsDTO pendingProductsDTO) {
+    public ResponseEntity<String> finalApproveProduct(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestBody PendingProductsDTO pendingProductsDTO) {
         try {
             bidService.updateProductStatus(pendingProductsDTO.getProductId(), StorageStatus.READY);
             Optional<User> user = userRepository.findBySerialNumber(pendingProductsDTO.getSerialNumber());
@@ -98,7 +98,7 @@ public class AdminController {
 
     @Transactional
     @PostMapping("/decline-product")
-    public ResponseEntity<String> declineProduct(@RequestBody DeclineReasonDTO declineReasonDTO) {
+    public ResponseEntity<String> declineProduct(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestBody DeclineReasonDTO declineReasonDTO) {
         try {
             bidService.updateProductStatus(declineReasonDTO.getProductId(), StorageStatus.DECLINED);
             Optional<User> user = userRepository.findBySerialNumber(declineReasonDTO.getSerialNumber());
@@ -121,7 +121,7 @@ public class AdminController {
 
     @Transactional
     @PostMapping("/user-state")
-    public ResponseEntity<String> updateUserState(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<String> updateUserState(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestBody Map<String, String> payload) {
         try {
             String userId = payload.get("userId");
             String state = payload.get("state");
@@ -135,7 +135,7 @@ public class AdminController {
 
     @Transactional
     @GetMapping("/bids/today-count")
-    public int getTodayBidsCount() {
+    public int getTodayBidsCount(@RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
         return bidService.getTodayBidsCount();
     }
 
