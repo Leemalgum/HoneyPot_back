@@ -16,7 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,9 +33,10 @@ public class AdminController {
     private final BidService bidService;
     private final EmailService emailService;
     private final UserRepository userRepository;
+    private final TransactionTemplate transactionTemplate;
 
     @GetMapping(path = "/pending-processing-products")
-    public List<PendingProductsDTO> getAllPendingAndProcessingWithIdolNameAndPtypeName(){
+    public List<PendingProductsDTO> getAllPendingAndProcessingWithIdolNameAndPtypeName() {
         return bidService.getAllPendingAndProcessingWithIdolNameAndPtypeName();
     }
 
@@ -41,7 +46,6 @@ public class AdminController {
         return ResponseEntity.ok(users);
     }
 
-    @Transactional
     @PostMapping("/approve-product")
     public ResponseEntity<String> approveProduct(@RequestBody PendingProductsDTO pendingProductsDTO) {
         System.out.println("시리얼 넘버" + pendingProductsDTO.getSerialNumber());
@@ -51,8 +55,14 @@ public class AdminController {
         try {
             bidService.updateProductStatus(pendingProductsDTO.getProductId(), StorageStatus.PROCESSING);
             Optional<User> user = userRepository.findBySerialNumber(pendingProductsDTO.getSerialNumber());
+            System.out.println(user.toString());
             if (user.isPresent()) {
-                emailService.sendReceiptApprovementEmail(user.get().getEmail(), pendingProductsDTO);
+                transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+                        emailService.sendReceiptApprovementEmail(user.get().getEmail(), pendingProductsDTO);
+                    }
+                });
                 return ResponseEntity.ok("Product approved successfully and email sent.");
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
@@ -70,8 +80,13 @@ public class AdminController {
             bidService.updateProductStatus(pendingProductsDTO.getProductId(), StorageStatus.READY);
             Optional<User> user = userRepository.findBySerialNumber(pendingProductsDTO.getSerialNumber());
             if (user.isPresent()) {
-                emailService.sendRegisterApprovementEmail(user.get().getEmail(), pendingProductsDTO);
-                return ResponseEntity.ok("Product finally approved successfully and email sent.");
+                transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+                        emailService.sendRegisterApprovementEmail(user.get().getEmail(), pendingProductsDTO);
+                    }
+                });
+                return ResponseEntity.ok("Product approved successfully and email sent.");
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
             }
@@ -88,7 +103,12 @@ public class AdminController {
             bidService.updateProductStatus(declineReasonDTO.getProductId(), StorageStatus.DECLINED);
             Optional<User> user = userRepository.findBySerialNumber(declineReasonDTO.getSerialNumber());
             if (user.isPresent()) {
-                emailService.sendReceiptRejectionEmail(user.get().getEmail(), declineReasonDTO);
+                transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+                        emailService.sendReceiptRejectionEmail(user.get().getEmail(), declineReasonDTO);
+                    }
+                });
                 return ResponseEntity.ok("Product declined successfully and email sent.");
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
