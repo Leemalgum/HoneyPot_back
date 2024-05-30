@@ -162,7 +162,7 @@ public class EmailServiceImpl implements EmailService {
             helper.setSubject("꿀단지에 경매 상품이 등록되었습니다.");
 
             String body = "<h1>안녕하세요, 꿀단지에서 상품이 경매로 등록되었음을 안내드립니다.</h1>";
-            body += "<p>아래 주소에서 상품을 확인하세요 : <a href='http://localhost:3000/bid-details/" + pendingProductsDTO.getProductId() + "'>경매 상품 확인</a></p>";
+//            body += "<p>아래 주소에서 상품을 확인하세요 : <a href='http://localhost:3000/bid-details/" + pendingProductsDTO.getProductId() + "'>경매 상품 확인</a></p>";
             body += "<p>감사합니다.<br><br>팀 봄bee (beeSpring) </p>";
 
             helper.setText(body, true); // true를 설정하여 HTML을 사용하도록 함
