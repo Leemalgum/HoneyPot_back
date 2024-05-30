@@ -7,4 +7,5 @@ public class DeclineReasonDTO {
     private String productId;
     private String serialNumber;
     private String declineReason;
+    private String storageStatus;
 }
