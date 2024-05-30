@@ -16,51 +16,41 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     @Query("SELECT p, i.idolName, pt.ptypeName FROM Product p JOIN p.idol i JOIN p.productType pt")
     List<Object[]> findAllWithIdolName();
 
-    //    @Query("SELECT p.productId, br.paymentStatus, br.completeDate, sh.deliveryStatus, u.serialNumber, p.productName, p.image1, p.priceUnit, p.startPrice, p.bidCnt, u.nickname FROM Shipping sh JOIN sh.bidResult br JOIN br.product p JOIN p.user u WHERE u.serialNumber = :serialNumber\n")
-//    @Query("SELECT p.productId, br.paymentStatus, br.completeDate, sh.deliveryStatus, u.serialNumber, p.productName, p.image1, p.priceUnit, p.startPrice, p.bidCnt, u.nickname " +
-//            "FROM Shipping sh " +
-//            "JOIN sh.bidResult br " +
-//            "JOIN br.product p " +
-//            "JOIN p.user u " +
-//            "WHERE u.serialNumber = :serialNumber")
+    /**
+     * mypage->판매목록
+     * @param serialNumber
+     * @return
+     */
     @Query("SELECT p.productId, br.paymentStatus, br.completeDate, sh.deliveryStatus, p.user.serialNumber, p.productName, p.image1, p.priceUnit, p.startPrice, p.bidCnt, u.nickname, p.storageStatus " +
             "FROM Shipping sh " +
             "JOIN sh.bidResult br " +
             "RIGHT JOIN br.product p " +
             "JOIN p.user u " +
-            "WHERE p.user.serialNumber = :serialNumber")
+            "WHERE p.user.serialNumber = :serialNumber " +
+            "ORDER BY p.registrationDate DESC")
     List<Object[]> findBySerialNumber(String serialNumber);
 
-    //    @Query("SELECT p.productId, br.paymentStatus, br.completeDate, sh.deliveryStatus, u.serialNumber, " +
-//            "p.productName, p.image1, p.priceUnit, p.startPrice, p.bidCnt, u.nickname " +
-//            "FROM Shipping sh " +
-//            "JOIN sh.bidResult br " +
-//            "JOIN br.product p " +
-//            "JOIN p.user u " +
-//            "WHERE u.serialNumber = :serialNumber")
-//    @Query("SELECT p.productId, br.paymentStatus, br.completeDate, sh.deliveryStatus, u.serialNumber, " +
-//            "p.productName, p.image1, p.priceUnit, p.startPrice, p.bidCnt, u.nickname " +
-//            "FROM Shipping sh " +
-//            "JOIN BidResult br " +
-//            "JOIN br.product p " +
-//            "JOIN p.user u " +
-//            "WHERE u.serialNumber = :serialNumber AND br.customerId = :serialNumber and sh.bidResultId = br.bidResultId")
-//    @Query("SELECT p.productId, br.paymentStatus, br.completeDate, sh.deliveryStatus, u.serialNumber, " +
-//            "p.productName, p.image1, p.priceUnit, p.startPrice, p.bidCnt, u.nickname " +
-//            "FROM BidResult br " +
-//            "JOIN br.product p " +
-//            "JOIN User u ON br.customerId = u.serialNumber " +
-//            "LEFT JOIN Shipping sh ON sh.bidResult = br " +
-//            "WHERE u.serialNumber = :serialNumber AND br.customerId = :serialNumber")
+    /**
+     * mypage->구매 목록
+     * @param serialNumber
+     * @return
+     */
     @Query("SELECT p.productId, br.paymentStatus, br.completeDate, sh.deliveryStatus, p.user.serialNumber, " +
             "p.productName, p.image1, p.priceUnit, p.startPrice, p.bidCnt, seller.nickname " +
             "FROM BidResult br " +
             "JOIN br.product p " +
             "JOIN User seller ON p.user.serialNumber = seller.serialNumber " +
             "LEFT JOIN Shipping sh ON sh.bidResult = br " +
-            "WHERE br.customerId = :serialNumber")
+            "WHERE br.customerId = :serialNumber " +
+            "ORDER BY br.endTime DESC")
     List<Object[]> findByCustomerId(String serialNumber);
 
+    /**
+     * 마이페이지->구매목록->결제상태='결제대기'일 경우->결제페이지(serialNumber, productId를 가지고)로 연결
+     * @param serialNumber
+     * @param productId
+     * @return
+     */
     @Query("SELECT p.productId, u.serialNumber, p.productName, p.priceUnit, p.startPrice, p.bidCnt, " +
             "sa.addressId, sa.addressName, sa.recipientName, sa.recipientPhone, sa.postCode, sa.roadAddress, sa.detailAddress " +
             "FROM Product p JOIN p.user u JOIN u.shippingAddresses sa " +

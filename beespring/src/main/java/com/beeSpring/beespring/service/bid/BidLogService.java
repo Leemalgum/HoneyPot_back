@@ -15,5 +15,10 @@ public interface BidLogService {
     @Transactional(readOnly = true)
     List<Bid> getBidsForProduct(Product product);
 
+    /**
+     * 마이페이지->입찰목록
+     * @param serialNumber
+     * @return
+     */
     List<BidDTO> getMostRecentBidsByUser(String serialNumber);
 }

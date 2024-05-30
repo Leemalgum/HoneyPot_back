@@ -63,6 +63,11 @@ public class BidLogServiceImpl implements BidLogService {
         return CompletableFuture.supplyAsync(() -> bidLogRepository.findByProduct(product), executorService).join();
     }
 
+    /**
+     * 마이페이지->입찰 목록
+     * @param serialNumber
+     * @return
+     */
     @Override
     public List<BidDTO> getMostRecentBidsByUser(String serialNumber) {
         List<Object[]> results = bidLogRepository.findMostRecentBidsByUser(serialNumber);
