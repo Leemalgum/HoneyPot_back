@@ -89,6 +89,7 @@ public class OAuth2Controller {
             user.setEmail(email);
             user.setProfileImage(profileImage);
             user.setRegistrationDate(LocalDateTime.now());
+            user.setRoleId(1);
 
 /*            user.setAccessToken(accessToken);
             user.setRefreshToken(refreshToken);
