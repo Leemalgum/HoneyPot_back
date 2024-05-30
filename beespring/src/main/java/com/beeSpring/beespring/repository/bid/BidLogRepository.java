@@ -17,18 +17,19 @@ public interface BidLogRepository extends JpaRepository<Bid, Integer> {
 
     List<Bid> findByProduct(Product product);
 
-    //    @Query("SELECT b, b.user.nickname FROM Bid b " +
-//            "WHERE b.user.serialNumber = :serialNumber " +
-//            "AND b.bidTime = (SELECT MAX(b2.bidTime) " +
-//            "FROM Bid b2 WHERE b2.product = b.product " +
-//            "AND b2.user.serialNumber = :serialNumber)")
+    /**
+     * 마이페이지->입찰 목록
+     * @param serialNumber
+     * @return
+     */
     @Query("SELECT b, seller.nickname FROM Bid b " +
             "JOIN b.product p " +
             "JOIN User seller ON p.user.serialNumber = seller.serialNumber " +
             "WHERE b.user.serialNumber = :serialNumber " +
             "AND b.bidTime = (SELECT MAX(b2.bidTime) " +
             "FROM Bid b2 WHERE b2.product = b.product " +
-            "AND b2.user.serialNumber = :serialNumber)")
+            "AND b2.user.serialNumber = :serialNumber)" +
+            "ORDER BY b.bidTime DESC")
     List<Object[]> findMostRecentBidsByUser(String serialNumber);
 
     @Query("SELECT u.nickname, u.email, p.productName, p.id " +
