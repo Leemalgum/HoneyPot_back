@@ -37,4 +37,7 @@ public interface BidLogRepository extends JpaRepository<Bid, Integer> {
             "JOIN b.product p " +
             "WHERE p.deadline BETWEEN :now AND :oneHourLater")
     List<Object[]> findUsersWithProductDeadlineWithinAnHour(@Param("now") LocalDateTime now, @Param("oneHourLater") LocalDateTime oneHourLater);
+
+    @Query("SELECT COUNT(b) FROM Bid b WHERE b.bidTime >= :startOfDay AND b.bidTime < :endOfDay")
+    int countBidsToday(LocalDateTime startOfDay, LocalDateTime endOfDay);
 }

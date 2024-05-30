@@ -2,6 +2,8 @@ package com.beeSpring.beespring.service.bid;
 
 import com.beeSpring.beespring.domain.bid.BidResult;
 import com.beeSpring.beespring.domain.bid.Product;
+import com.beeSpring.beespring.domain.bid.StorageStatus;
+import com.beeSpring.beespring.dto.bid.PendingProductsDTO;
 import com.beeSpring.beespring.dto.bid.ProductDTO;
 import com.beeSpring.beespring.dto.bid.ProductWithIdolNameDTO;
 import com.beeSpring.beespring.dto.main.MainProductDTO;
@@ -25,4 +27,10 @@ public interface BidService {
 
     void insertBidResultByProduct();
     void  updateProductStatus();
+
+    List<PendingProductsDTO> getAllPendingAndProcessingWithIdolNameAndPtypeName();
+
+    void updateProductStatus(String productId, StorageStatus status);
+
+    int getTodayBidsCount();
 }

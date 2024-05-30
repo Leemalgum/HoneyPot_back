@@ -1,5 +1,6 @@
 package com.beeSpring.beespring.security.jwt;
 
+import com.beeSpring.beespring.service.user.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -31,7 +32,7 @@ public class JwtTokenProvider {
     @Value("${spring.jwt.expiration.refresh}")
     private long refreshValidityInMilliseconds;
 
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
     private Key key;
 

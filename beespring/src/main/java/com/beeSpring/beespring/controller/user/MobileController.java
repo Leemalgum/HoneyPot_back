@@ -4,6 +4,8 @@ import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.repository.user.UserRepository;
 import com.beeSpring.beespring.response.CustomApiResponse;
 import com.beeSpring.beespring.response.ResponseCode;
+import com.beeSpring.beespring.security.jwt.JwtTokenProvider;
+import jakarta.annotation.PostConstruct;
 import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException;
 import net.nurigo.sdk.message.model.Balance;
@@ -18,6 +20,8 @@ import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +40,24 @@ import java.util.*;
 @RequestMapping("/mms")
 public class MobileController {
     private static final Logger log = LoggerFactory.getLogger(MobileController.class);
-    private final DefaultMessageService messageService;
+    private DefaultMessageService messageService;
     private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public MobileController(UserRepository userRepository) {
-        this.messageService = NurigoApp.INSTANCE.initialize("${coolsms.api.key}", "${coolsms.api.secret}", "https://api.coolsms.co.kr");
+    @Value("${coolsms.api.key}")
+    private String apiKey;
+
+    @Value("${coolsms.api.secret}")
+    private String apiSecret;
+
+    public MobileController(UserRepository userRepository, @Lazy JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    @PostConstruct
+    public void init() {
+        this.messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecret, "https://api.coolsms.co.kr");
     }
 
     /**
@@ -89,7 +105,7 @@ public class MobileController {
     }
 
     /**
-     * 단일 메시지 발송
+     * 아이디 찾기 시 단일 메시지 발송
      */
     @PostMapping("/send-one")
     public ResponseEntity<?> sendOne(@RequestParam("name") String name,
@@ -108,10 +124,21 @@ public class MobileController {
 
                 String authCode = generateRandomAuthCode();
 
-                message.setText("인증번호는 [" + authCode + "] 입니다.");
+                message.setText("꿀단지 인증번호는 [" + authCode + "] 입니다.");
 
-                SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
-                System.out.println(response);
+                /*SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
+                System.out.println(response);*/
+
+                try {
+                    // send 메소드로 ArrayList<Message> 객체를 넣어도 동작합니다!
+                    messageService.send(message);
+                } catch (NurigoMessageNotReceivedException exception) {
+                    // 발송에 실패한 메시지 목록을 확인할 수 있습니다!
+                    System.out.println(exception.getFailedMessageList());
+                    System.out.println(exception.getMessage());
+                } catch (Exception exception) {
+                    System.out.println(exception.getMessage());
+                }
 
                 User user = userOptional.get();
                 String userId = user.getUserId();
@@ -125,6 +152,58 @@ public class MobileController {
                 return ResponseEntity.ok(CustomApiResponse.success(responseMap, ResponseCode.SEND_MMS_SUCCESS.getMessage()));
             } else {
                 log.warn("User not found with name: {} and mobile number: {}", name, mobileNumber);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            System.out.println("서버 오류");
+            log.error("Unexpected error", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * 회원 가입 시 단일 메시지 발송
+     */
+    @PostMapping("/send-one-signup")
+    public ResponseEntity<?> sendOneSignup(@RequestParam("name") String name,
+                                     @RequestParam("mobileNumber") String mobileNumber) {
+        System.out.println(name);
+        System.out.println(mobileNumber);
+
+        try {
+            Optional<User> userOptional = userRepository.findByFirstNameAndMobileNumber(name, mobileNumber);
+
+            if (!userOptional.isPresent()) {
+                Message message = new Message();
+
+                message.setFrom("01041147085");
+                message.setTo(mobileNumber);
+
+                String authCode = generateRandomAuthCode();
+
+                message.setText("꿀단지 인증번호는 [" + authCode + "] 입니다.");
+
+                /*SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
+                System.out.println(response);*/
+
+                try {
+                    // send 메소드로 ArrayList<Message> 객체를 넣어도 동작합니다!
+                    messageService.send(message);
+                } catch (NurigoMessageNotReceivedException exception) {
+                    // 발송에 실패한 메시지 목록을 확인할 수 있습니다!
+                    System.out.println(exception.getFailedMessageList());
+                    System.out.println(exception.getMessage());
+                } catch (Exception exception) {
+                    System.out.println(exception.getMessage());
+                }
+
+                Map<String, Object> responseMap = new HashMap<>();
+                responseMap.put("authCode", authCode);
+                responseMap.put("message", "인증번호가 발송되었습니다.");
+
+                return ResponseEntity.ok(CustomApiResponse.success(responseMap, ResponseCode.SEND_MMS_SUCCESS.getMessage()));
+            } else {
+                log.warn("User found with name: {} and mobile number: {}", name, mobileNumber);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
         } catch (Exception e) {

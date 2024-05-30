@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.beeSpring.beespring.domain.category.Idol;
+import com.beeSpring.beespring.domain.user.State;
 import com.beeSpring.beespring.domain.user.User;
 import com.beeSpring.beespring.domain.user.UserIdol;
 import com.beeSpring.beespring.dto.shipping.ShippingAddressDTO;
@@ -18,6 +19,7 @@ import com.beeSpring.beespring.response.CustomApiResponse;
 import com.beeSpring.beespring.response.ResponseCode;
 import com.beeSpring.beespring.security.jwt.JwtTokenProvider;
 import com.beeSpring.beespring.service.shipping.ShippingServiceImpl;
+import com.beeSpring.beespring.service.user.PasswordResetTokenServiceImpl;
 import com.beeSpring.beespring.service.user.UserIdolService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -71,7 +73,7 @@ public class AuthController {
     private final ShippingAddressRepository shippingAddressRepository;
     private final TransactionTemplate transactionTemplate;
     private final ShippingServiceImpl shippingService;
-
+    private final PasswordResetTokenServiceImpl passwordResetTokenService;
 
     @Transactional
     @PostMapping("/login")
@@ -169,6 +171,7 @@ public class AuthController {
             user.setMobileNumber(mobileNumber);
             user.setEmail(email);
             user.setRegistrationDate(LocalDateTime.now());
+            user.setState(State.ACTIVE);
             if (birthdate != null && !birthdate.isEmpty()) {
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -365,5 +368,36 @@ public class AuthController {
             logger.error("Failed to upload file to S3. SDK error message: {}", e.getMessage());
             throw new IOException("Failed to upload file to S3.", e);
         }
+    }
+
+    @GetMapping("/reset-password")
+    public ResponseEntity<?> showResetPasswordPage(@RequestParam("token") String token) {
+        String result = passwordResetTokenService.validatePasswordResetToken(token);
+        if (result != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        return ResponseEntity.ok("Token is valid.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestParam("token") String token, @RequestBody Map<String, String> requestBody) {
+        String newPassword = requestBody.get("newPassword");
+        if (newPassword == null || newPassword.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New password is required");
+        }
+
+        String result = passwordResetTokenService.validatePasswordResetToken(token);
+        if (result != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+
+        User user = passwordResetTokenService.getUserByPasswordResetToken(token);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        passwordResetTokenService.invalidateToken(token);
+
+        return ResponseEntity.ok("Password successfully reset.");
     }
 }

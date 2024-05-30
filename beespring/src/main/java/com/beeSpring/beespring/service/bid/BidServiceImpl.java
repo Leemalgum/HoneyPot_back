@@ -23,6 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import com.beeSpring.beespring.dto.bid.PendingProductsDTO;
+
 @Service
 @RequiredArgsConstructor
 public class BidServiceImpl implements BidService{
@@ -31,7 +35,7 @@ public class BidServiceImpl implements BidService{
     private final MainProductRepository mainProductRepository;
     private final BidResultRepository bidResultRepository;
     private final UserRepository userRepository;
-
+    private final BidLogRepository bidLogRepository;
 
     public List<ProductWithIdolNameDTO> getAllProductsWithIdolName(){
         List<Object[]> productList = productRepository.findAllWithIdolName();
@@ -216,6 +220,52 @@ public class BidServiceImpl implements BidService{
         updateProductStatus();
     }
 
+    @Override
+    public List<PendingProductsDTO> getAllPendingAndProcessingWithIdolNameAndPtypeName() {
+        List<Object[]> productList = productRepository.findAllPendingAndProcessingWithIdolNameAndPtypeName();
+        List<PendingProductsDTO> products = new ArrayList<>();
 
+        for (Object[] objArray : productList) {
+            Product product = (Product) objArray[0];
+            String idolName = (String) objArray[1];
+            PendingProductsDTO productDTO = new PendingProductsDTO();
+            productDTO.setProductId(product.getProductId());
+            productDTO.setProductName(product.getProductName());
+            productDTO.setIdolName(idolName);
+            productDTO.setPtypeId(product.getProductType().getPtypeId());
+            productDTO.setSerialNumber(product.getUser().getSerialNumber());
+            productDTO.setImage1(product.getImage1());
+            productDTO.setImage2(product.getImage2());
+            productDTO.setProductInfo(product.getProductInfo());
+            productDTO.setPrice(product.getPrice());
+            productDTO.setPriceUnit(product.getPriceUnit());
+            productDTO.setBuyNow(product.getBuyNow());
+            productDTO.setTimeLimit(product.getTimeLimit());
+            productDTO.setView(product.getView());
+            productDTO.setStartPrice(product.getStartPrice());
+            productDTO.setRegistrationDate(product.getRegistrationDate());
+            productDTO.setBidCnt(product.getBidCnt());
+            productDTO.setRequestTime(product.getRequestTime());
+            productDTO.setStorageStatus(String.valueOf(product.getStorageStatus()));
+            productDTO.setPtypeName(product.getProductType().getPtypeName());
 
+            products.add(productDTO);
+        }
+
+        return products;
+    }
+
+    @Transactional
+    @Override
+    public void updateProductStatus(String productId, StorageStatus status) {
+        productRepository.updateProductStatus(productId, status);
+    }
+
+    @Override
+    public int getTodayBidsCount() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+        return bidLogRepository.countBidsToday(startOfDay, endOfDay);
+    }
 }
