@@ -47,7 +47,7 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
 //            "JOIN User u ON ui.serialNumber = u.serialNumber " +
 //            "WHERE i.idolName = ?1" +
 //            "ORDER BY rand() DESC LIMIT 4")
-    @Query("SELECT p, i.idolName, t.ptypeName, u.userId " +
+    @Query("SELECT p, i.idolName, t.ptypeName, u.nickname " +
             "FROM Product p " +
             "JOIN p.idol i " +
             "JOIN p.productType t " +
@@ -65,7 +65,7 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
 //            "            JOIN ProductType t ON p.ptypeId  = t.ptypeId\n" +
 //            "            JOIN User u ON p.serialNumber  = u.serialNumber\n" +
 //            "            ORDER BY p.view DESC limit 12")
-    @Query("SELECT p, i.idolName, t.ptypeName, u.userId " +
+    @Query("SELECT p, i.idolName, t.ptypeName, u.nickname " +
             "FROM Product p " +
             "JOIN p.idol i " +
             "JOIN p.productType t " +
@@ -81,7 +81,7 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
 //            "            JOIN ProductType t ON p.ptypeId  = t.ptypeId\n" +
 //            "            JOIN User u ON p.serialNumber  = u.serialNumber\n" +
 //            "            ORDER BY p.timeLimit DESC limit 12")
-    @Query("SELECT p, i.idolName, t.ptypeName, u.userId " +
+    @Query("SELECT p, i.idolName, t.ptypeName, u.nickname " +
             "FROM Product p " +
             "JOIN p.idol i " +
             "JOIN p.productType t " +
@@ -98,7 +98,7 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
 //            "            JOIN ProductType t ON p.ptypeId  = t.ptypeId\n" +
 //            "            JOIN User u ON p.serialNumber  = u.serialNumber\n" +
 //            "            ORDER BY p.registrationDate ASC limit 12")
-    @Query("SELECT p, i.idolName, t.ptypeName, u.userId " +
+    @Query("SELECT p, i.idolName, t.ptypeName, u.nickname " +
             "FROM Product p " +
             "JOIN p.idol i " +
             "JOIN p.productType t " +
@@ -114,7 +114,7 @@ public interface MainProductRepository extends JpaRepository<Product, String> {
 //            "JOIN User u ON p.serialNumber = u.serialNumber "+
 //            "WHERE p.productId = ?1"
 //    )
-    @Query("SELECT u.userId " +
+    @Query("SELECT u.nickname " +
             "FROM Product p " +
             "JOIN p.user u " +
             "WHERE p.productId = ?1")
