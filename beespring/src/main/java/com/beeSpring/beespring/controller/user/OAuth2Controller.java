@@ -88,6 +88,7 @@ public class OAuth2Controller {
             user.setProvider("kakao");
             user.setEmail(email);
             user.setProfileImage(profileImage);
+            user.setRegistrationDate(LocalDateTime.now());
 
 /*            user.setAccessToken(accessToken);
             user.setRefreshToken(refreshToken);
