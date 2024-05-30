@@ -20,9 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 @RestController
@@ -144,6 +142,7 @@ public class MypageController {
             productDTO.setPriceUnit(priceUnit);
             productDTO.setBuyNow(buyNow);
             productDTO.setStartPrice(startPrice);
+
             productDTO.setProductInfo(productInfo);
             productDTO.setPrice(startPrice);
 
@@ -179,6 +178,17 @@ public class MypageController {
         } catch (Exception e) {
             log.error("Error occurred while registering product", e);
             return ResponseEntity.internalServerError().body("Failed to register product: " + e.getMessage());
+        }
+    }
+    @PostMapping("/upload-image")
+    public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            String imageUrl = mypageService.storeImage(file);
+            Map<String, String> response = new HashMap<>();
+            response.put("url", imageUrl);
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
