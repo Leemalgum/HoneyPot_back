@@ -119,7 +119,7 @@ public class OAuth2Controller {
             map.put("refreshToken", jwtRefreshToken);
             map.put("accessTokenExpiration", String.valueOf(jwtAccessTokenExpiration));
             map.put("refreshTokenExpiration", String.valueOf(jwtRefreshTokenExpiration));
-            map.put("redirectUrl", "http://localhost:3000");
+            map.put("redirectUrl", "http://223.130.153.93:3000/");
 
             logger.info("Login successful for userId: {}", userId);
             return ResponseEntity.ok(CustomApiResponse.success(map, ResponseCode.USER_LOGIN_SUCCESS.getMessage()));

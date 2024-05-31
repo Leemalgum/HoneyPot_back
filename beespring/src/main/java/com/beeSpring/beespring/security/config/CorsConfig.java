@@ -18,8 +18,8 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource(); // url 패턴을 기반으로 CORS 구성을 저장하는 객체
         CorsConfiguration config = new CorsConfiguration(); // CORS 정책을 정의하는 객체
         config.setAllowCredentials(true); // 자격 증명 (쿠키, 인증 헤더 등) 을 허용하도록 설정
-        config.addAllowedOrigin("http://localhost:3000"); // 모든 도메인에서의 요청을 허용 (와일드카드 문법을 허용하는 메서드)
-        config.addAllowedOrigin("http://localhost:8080"); // 모든 도메인에서의 요청을 허용 (와일드카드 문법을 허용하는 메서드)
+        config.addAllowedOrigin("http://223.130.153.93:3000/"); // 모든 도메인에서의 요청을 허용 (와일드카드 문법을 허용하는 메서드)
+        config.addAllowedOrigin("http://10.0.11.7:8080"); // 모든 도메인에서의 요청을 허용 (와일드카드 문법을 허용하는 메서드)
         config.addAllowedHeader("*"); // 모든 헤더를 허용
         config.addAllowedMethod("*"); // 모든 HTTP 메서드 (GET, POST, PUT, DELETE 등)을 허용
         config.addExposedHeader("Authorization"); // 클라이언트가 'Authorization' 헤더에 접근할 수 있게 한다

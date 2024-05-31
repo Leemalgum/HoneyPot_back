@@ -43,7 +43,7 @@ public class PaymentController {
 //    }
 
     @GetMapping("/payments/{productId}")
-    @CrossOrigin(origins = {"http://localhost:3000", "http://223.130.153.93:8011"})
+    @CrossOrigin(origins = {"http://223.130.153.93:3000/", "http://223.130.153.93:8011"})
     public ResponseEntity<ProductWithSerialNumberDTO> getPaymentStatus(@PathVariable("productId") String productIds) {
         int status = paymentServiceImpl.getPaymentStatus(productIds).getPaymentStatus();
 
@@ -62,7 +62,7 @@ public class PaymentController {
     }
 
     @PostMapping  // Handle POST requests to /payment
-    @CrossOrigin(origins = {"http://localhost:3000", "http://223.130.153.93:8011"})
+    @CrossOrigin(origins = {"http://223.130.153.93:3000/", "http://223.130.153.93:8011"})
     public ResponseEntity<PaymentDTO> processPaymentData(@RequestBody PaymentDTO paymentDTO) {
         log.info("Received Payment Data: {}", paymentDTO);
 
