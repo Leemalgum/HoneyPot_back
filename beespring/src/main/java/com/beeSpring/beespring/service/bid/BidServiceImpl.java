@@ -189,7 +189,7 @@ public class BidServiceImpl implements BidService{
             bidResultDTO.setPaymentStatus(0);
             bidResultDTO.setEndTime(product.getDeadline());
             bidResultDTO.setModTime(LocalDateTime.now());
-            bidResultDTO.setCompleteDate(product.getDeadline());
+            bidResultDTO.setCompleteDate(LocalDateTime.now());
             bidResultDTO.setEnrolledTime(LocalDateTime.now());
 
             if (highestBid == null) {
@@ -205,6 +205,8 @@ public class BidServiceImpl implements BidService{
                     product
                     , bidResultDTO.getPaymentStatus()
                     , bidResultDTO.getEndTime()
+                    , bidResultDTO.getModTime()
+                    , bidResultDTO.getCompleteDate()
                     , bidResultDTO.getEnrolledTime()
                     , bidResultDTO.getCustomerId()
                     , bidResultDTO.getResult()

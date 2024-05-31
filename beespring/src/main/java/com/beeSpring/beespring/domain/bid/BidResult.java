@@ -58,6 +58,17 @@ public class BidResult {
 
     }
 
+    public BidResult(Product product, int paymentStatus, LocalDateTime endTime, LocalDateTime modTime, LocalDateTime completeDate, LocalDateTime enrolledTime, String customerId, String result) {
+        this.product = product;
+        this.paymentStatus = paymentStatus;
+        this.endTime = endTime;
+        this.modTime = modTime;
+        this.completeDate = completeDate;
+        this.enrolledTime = enrolledTime;
+        this.customerId = customerId;
+        this.result = BidResultStatus.valueOf(result);
+    }
+
     @Override
     public String toString() {
         return "BidResult{" +
@@ -76,14 +87,18 @@ public class BidResult {
     }
 
 
-    public BidResult(Product product, int paymentStatus, LocalDateTime endTime, LocalDateTime enrolledTime, String customerId, String result) {
+//    public BidResult(Product product, int paymentStatus, LocalDateTime endTime, LocalDateTime enrolledTime, String customerId, String result) {
+//
+//        this.product = product;
+//        this.paymentStatus = paymentStatus;
+//        this.endTime = endTime;
+//        this.enrolledTime = enrolledTime;
+//        this.customerId = customerId;
+//        this.result = BidResultStatus.valueOf(result);
+//
+//    }
 
-        this.product = product;
-        this.paymentStatus = paymentStatus;
-        this.endTime = endTime;
-        this.enrolledTime = enrolledTime;
-        this.customerId = customerId;
-        this.result = BidResultStatus.valueOf(result);
 
-    }
+
+
 }
