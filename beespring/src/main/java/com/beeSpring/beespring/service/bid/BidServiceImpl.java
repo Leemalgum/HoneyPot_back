@@ -67,6 +67,7 @@ public class BidServiceImpl implements BidService{
             productDTO.setRequestTime(product.getRequestTime());
             productDTO.setStorageStatus(String.valueOf(product.getStorageStatus()));
             productDTO.setPtypeName(product.getProductType().getPtypeName());
+            productDTO.setDeadline(product.getDeadline());
 
             products.add(productDTO);
         }
