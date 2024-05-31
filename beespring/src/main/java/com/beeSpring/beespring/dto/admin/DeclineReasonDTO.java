@@ -6,6 +6,7 @@ import lombok.Data;
 public class DeclineReasonDTO {
     private String productId;
     private String serialNumber;
+    private String productName;
     private String declineReason;
     private String storageStatus;
 }
