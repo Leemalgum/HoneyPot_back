@@ -36,7 +36,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
      * @return
      */
     @Query("SELECT p.productId, br.paymentStatus, br.completeDate, sh.deliveryStatus, p.user.serialNumber, " +
-            "p.productName, p.image1, p.priceUnit, p.startPrice, p.bidCnt, seller.nickname " +
+            "p.productName, p.image1, p.price, seller.nickname " +
             "FROM BidResult br " +
             "JOIN br.product p " +
             "JOIN User seller ON p.user.serialNumber = seller.serialNumber " +

@@ -23,6 +23,7 @@ public class ProductWithSerialNumberDTO {
     private Integer bidCnt;
     private String nickName;
     private StorageStatus storageStatus;
+    private Integer price;
     // 배송 상태를 문자열로 반환하는 메서드, null 검사를 추가함
     public String getDeliveryStatusAsString() {
         return deliveryStatus != null ? deliveryStatus.toString() : "N/A";

@@ -34,4 +34,5 @@ public class ProductWithIdolNameDTO {
     private LocalDateTime requestTime;
     private String storageStatus;
     private String ptypeName;
+    private LocalDateTime deadline;
 }

@@ -182,10 +182,8 @@ public class MypageServiceImpl implements MypageService {
                     .serialNumber((String) objArray[4])
                     .productName((String) objArray[5])
                     .image1((String) objArray[6])
-                    .priceUnit((Integer) objArray[7])
-                    .startPrice((Integer) objArray[8])
-                    .bidCnt((Integer) objArray[9])
-                    .nickName((String) objArray[10])
+                    .price((Integer) objArray[7])
+                    .nickName((String) objArray[8])
                     .build();
 
 //            if (objArray[3] != null) {
