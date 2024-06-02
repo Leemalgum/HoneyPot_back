@@ -46,7 +46,7 @@ public class EmailServiceImpl implements EmailService {
 
             String body = "<div><img src='cid:logoImage' alt='Logo Image' style='width:200px;'></div>";
             body += "<h1>안녕하세요 " + nickname + "님</h1>";
-            body += "<div><a href='http://223.130.153.93:3000/bid-details/" + productId + "'>" + productName + "</a> 경매가 한 시간 이내에 종료됩니다.</div>";
+            body += "<div><a href='http://localhost:3000/bid-details/" + productId + "'>" + productName + "</a> 경매가 한 시간 이내에 종료됩니다.</div>";
             body += "<div>마지막 입찰 기회를 놓치지 마세요!<br>감사합니다.<br>꿀단지 팀</div>";
 
             helper.setText(body, true); // true를 설정하여 HTML을 사용하도록 함

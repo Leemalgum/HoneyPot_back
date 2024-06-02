@@ -118,7 +118,7 @@ public class AuthController {
             map.put("refreshToken", refreshToken);
             map.put("accessTokenExpiration", String.valueOf(accessTokenExpiration));
             map.put("refreshTokenExpiration", String.valueOf(refreshTokenExpiration));
-            map.put("redirectUrl", "http://223.130.153.93:3000/");
+            map.put("redirectUrl", "http://localhost:3000/");
 
             HttpSession session = request.getSession();
             session.setAttribute("JWT_TOKEN", accessToken);
