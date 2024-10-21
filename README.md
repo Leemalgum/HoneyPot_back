@@ -1,7 +1,5 @@
 # HoneyPotSystem-back
-
-Short project description or overview goes here.
-
+저희 팀 봄Bee(BeeSpring)는 '꿀단지'라는 서비스명으로 아이돌 굿즈 (포토카드, 앨범, DVD, 문구류, 의류) 중고 거래 및 경매 서비스를 제공합니다.
 <img width="1051" alt="스크린샷 2024-06-03 오후 5 46 35" src="https://github.com/Leemalgum/HoneyPot_front/assets/60692335/94ff9812-1369-43fe-aa91-35ad5d5840e7">
 
 ## Folder_Directory
