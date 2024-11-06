@@ -1,6 +1,6 @@
 # HoneyPot🍯
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/dc07d065-0113-4b56-b37b-7813a36fa756">
+  <img src="https://github.com/Leemalgum/HoneyPot_back/blob/main/images/logo.png?raw=true">
   <br>
   <strong>🍯 꿀 같은 아이템을 단, 지금 🍯</strong>
 </p>
@@ -14,12 +14,12 @@
 ### 기존 서비스와 차별점
 - **상품 및 판매자에 대한 신뢰성 보장 :** 판매자는 상품을 꿀단지에 보내어 검수를 통과해야만 판매 게시글을 올려 거래할 수 있습니다.
 <p align="left">
-  <img src="https://github.com/user-attachments/assets/23fea4db-1238-46fa-873b-c42a614118ab" width="600">
+  <img src="https://github.com/Leemalgum/HoneyPot_back/blob/main/images/stockingprocess.png?raw=true" width="600">
 </p>
 
 - **안전한 금융 거래 시스템 :** 에스크로 서비스를 도입하여 금융 거래의 신뢰성을 보장하였습니다.
 <p align="left">
-  <img src="https://github.com/user-attachments/assets/a82d7eb1-3071-4489-ba45-bfbb3e248fd2" width="400">
+  <img src="https://github.com/Leemalgum/HoneyPot_back/blob/main/images/escrow.png?raw=true" width="400">
 </p>
 
 - **사용자별 맞춤 상품 추천 :** 회원가입 시 관심 있는 아이돌 그룹을 최대 3개까지 선택할 수 있습니다. 이를 기반으로 상품을 추천하여 보다 편리한 서비스를 제공합니다.
@@ -34,12 +34,12 @@
 - **API:** 누리고 문자 알림 API, 다음 카카오 주소 API, TinyMCEditor, Google SMTP, PortOne API
 ## ERD
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/8ee63dc3-9598-4958-b788-19ffaf1e8302" width="800">
+  <img src="https://github.com/Leemalgum/HoneyPot_back/blob/main/images/ERD.png?raw=true" width="800">
 </p>
 
 ## Wireframe
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/4d12f608-6abd-4ec6-a9b7-a0aff58c5e72">
+  <img src="https://github.com/Leemalgum/HoneyPot_back/blob/main/images/wireframe.jpg?raw=true">
 </p>
 
 ## 주요 기능 설명
